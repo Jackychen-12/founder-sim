@@ -1,0 +1,2306 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width,initial-scale=1" />
+<title>创业人生模拟器 · Founder Sim</title>
+<style>
+  :root{
+    --bg:#F2EDE2;          /* warm paper */
+    --bg-2:#EAE3D3;
+    --panel:#FBF7EE;       /* lighter card */
+    --panel-2:#F6EFE0;
+    --ink:#1F1A14;         /* deep ink */
+    --ink-soft:#5C5448;
+    --dim:#8C8174;
+    --rule:#D9CFBE;        /* divider */
+    --rule-strong:#B9AC95;
+    --accent:#3F5A45;      /* ink green */
+    --accent-2:#A8522F;    /* terracotta */
+    --good:#4A6B47;
+    --bad:#9B3B2E;
+    --info:#5C6F8A;
+  }
+  *{box-sizing:border-box}
+  html,body{
+    margin:0;padding:0;background:var(--bg);color:var(--ink);
+    font-family:"Source Serif Pro","Source Serif 4","Noto Serif SC","Songti SC","STSong",Georgia,Cambria,"Times New Roman",serif;
+    font-size:15.5px;line-height:1.75;min-height:100%;
+    -webkit-font-smoothing:antialiased;
+    background-image:
+      radial-gradient(at 0% 0%, rgba(168,82,47,.04) 0px, transparent 50%),
+      radial-gradient(at 100% 100%, rgba(63,90,69,.05) 0px, transparent 50%);
+  }
+  h1,h2,h3,h4{
+    font-family:"Source Serif Pro","Cormorant Garamond","Noto Serif SC","Songti SC",Georgia,serif;
+    font-weight:600;letter-spacing:.005em;color:var(--ink);
+  }
+  a{color:var(--accent)}
+  button{font-family:inherit;font-size:14px;cursor:pointer;border:none;background:none}
+
+  .app{max-width:980px;margin:0 auto;padding:32px 28px 80px}
+
+  /* 刊头 */
+  .topbar{
+    display:flex;align-items:flex-end;justify-content:space-between;
+    border-bottom:1px solid var(--ink);padding-bottom:14px;margin-bottom:32px;
+  }
+  .brand{display:flex;align-items:baseline;gap:14px}
+  .logo{
+    width:40px;height:40px;border:1.5px solid var(--ink);
+    display:flex;align-items:center;justify-content:center;
+    font-family:"Cormorant Garamond","Source Serif Pro",serif;
+    font-style:italic;font-weight:700;color:var(--ink);font-size:22px;
+    background:var(--panel);
+  }
+  .brand h1{font-size:22px;margin:0;font-style:italic;letter-spacing:.02em}
+  .brand small{
+    display:block;font-size:10.5px;letter-spacing:.32em;
+    text-transform:uppercase;color:var(--ink-soft);
+    font-family:"Source Serif Pro","Noto Serif SC",serif;
+    margin-top:4px;
+  }
+  .ghost{
+    background:transparent;color:var(--ink-soft);
+    border:1px solid var(--rule-strong);padding:7px 14px;
+    font-family:inherit;font-size:12px;letter-spacing:.12em;text-transform:uppercase;
+  }
+  .ghost:hover{color:var(--ink);border-color:var(--ink)}
+
+  .kicker{
+    font-size:10.5px;letter-spacing:.32em;text-transform:uppercase;
+    color:var(--accent-2);font-weight:600;
+  }
+
+  /* 起始页 */
+  .hero{text-align:center;padding:40px 12px 12px;max-width:760px;margin:0 auto}
+  .hero .kicker{display:block;margin-bottom:18px}
+  .hero h2{
+    font-size:46px;line-height:1.18;margin:0 0 22px;
+    font-weight:500;letter-spacing:-.005em;
+  }
+  .hero h2 em{font-style:italic;color:var(--accent);font-weight:500}
+  .hero .lede{
+    color:var(--ink-soft);max-width:580px;margin:0 auto 32px;
+    line-height:1.85;font-size:16px;
+  }
+  .hero .rule{
+    width:60px;height:1px;background:var(--ink);
+    margin:0 auto 28px;opacity:.6;
+  }
+  .start-btn{
+    font-size:14px;padding:14px 32px;
+    background:var(--ink);color:var(--bg);
+    font-family:inherit;letter-spacing:.18em;text-transform:uppercase;
+    border:1px solid var(--ink);
+  }
+  .start-btn:hover{background:var(--accent);border-color:var(--accent)}
+
+  .feat{display:grid;grid-template-columns:repeat(4,1fr);gap:0;margin:60px 0 0;border-top:1px solid var(--rule)}
+  .feat .card{
+    padding:24px 20px;border-right:1px solid var(--rule);
+    border-bottom:1px solid var(--rule);
+    text-align:left;
+  }
+  .feat .card:nth-child(4n){border-right:none}
+  .feat .card b{
+    display:block;font-family:"Source Serif Pro","Noto Serif SC",serif;
+    font-weight:600;font-size:15px;color:var(--ink);margin-bottom:8px;
+  }
+  .feat .card .num{
+    font-family:"Cormorant Garamond","Source Serif Pro",serif;
+    font-style:italic;font-size:13px;color:var(--accent-2);
+    letter-spacing:.15em;margin-bottom:4px;
+  }
+  .feat .card span{color:var(--ink-soft);font-size:13.5px;line-height:1.7}
+  @media (max-width:760px){
+    .feat{grid-template-columns:repeat(2,1fr)}
+    .feat .card:nth-child(2n){border-right:none}
+  }
+
+  /* 选向页 */
+  .setup h3{
+    margin:0 0 8px;font-size:34px;font-weight:500;
+    letter-spacing:-.005em;font-style:italic;
+  }
+  .setup .sub{
+    color:var(--ink-soft);margin:0 0 28px;font-size:15.5px;
+    max-width:640px;line-height:1.8;
+  }
+  .row{display:grid;grid-template-columns:repeat(3,1fr);gap:0;border-top:1px solid var(--rule)}
+  @media (max-width:820px){.row{grid-template-columns:1fr}}
+  .dir{
+    background:transparent;padding:24px;cursor:pointer;
+    border-right:1px solid var(--rule);border-bottom:1px solid var(--rule);
+    transition:.2s;position:relative;
+  }
+  .dir:nth-child(3n){border-right:none}
+  @media (max-width:820px){.dir{border-right:none}}
+  .dir:hover{background:var(--panel)}
+  .dir.selected{background:var(--panel);box-shadow:inset 3px 0 0 var(--accent)}
+  .dir h4{margin:0 0 8px;font-size:18px;font-weight:600}
+  .dir .tag{
+    display:inline-block;font-size:10.5px;color:var(--accent-2);
+    letter-spacing:.18em;text-transform:uppercase;margin-bottom:8px;
+    font-weight:600;
+  }
+  .dir p{color:var(--ink-soft);font-size:13.5px;line-height:1.7;margin:6px 0 10px}
+  .dir .stats{font-size:12px;color:var(--dim);letter-spacing:.05em}
+  .dir .stats span{display:inline-block;margin-right:14px}
+
+  .form{
+    background:var(--panel);border:1px solid var(--rule);
+    padding:24px;margin-top:32px;
+  }
+  .form label{
+    display:block;font-size:11px;color:var(--ink-soft);
+    letter-spacing:.2em;text-transform:uppercase;margin-bottom:8px;font-weight:600;
+  }
+  .form input{
+    background:transparent;border:none;border-bottom:1px solid var(--rule-strong);
+    color:var(--ink);padding:8px 0;width:100%;font-size:16px;
+    font-family:inherit;outline:none;
+  }
+  .form input:focus{border-bottom-color:var(--ink)}
+  .form .grid2{display:grid;grid-template-columns:1fr 1fr;gap:28px}
+  @media (max-width:560px){.form .grid2{grid-template-columns:1fr;gap:18px}}
+  .primary{
+    background:var(--ink);color:var(--bg);font-family:inherit;
+    padding:13px 28px;font-size:13px;letter-spacing:.18em;text-transform:uppercase;
+    border:1px solid var(--ink);
+  }
+  .primary:hover{background:var(--accent);border-color:var(--accent)}
+  .primary:disabled{opacity:.3;cursor:not-allowed}
+  .primary:disabled:hover{background:var(--ink);border-color:var(--ink)}
+
+  /* 游戏页 */
+  .game{display:grid;grid-template-columns:260px 1fr;gap:36px}
+  @media (max-width:900px){.game{grid-template-columns:1fr}}
+  .stats-panel{
+    background:transparent;padding:0;
+    position:sticky;top:14px;align-self:start;
+    border-right:1px solid var(--rule);padding-right:24px;
+  }
+  @media (max-width:900px){.stats-panel{border-right:none;border-bottom:1px solid var(--rule);padding-right:0;padding-bottom:18px}}
+  .stats-panel h4{
+    margin:18px 0 10px;font-size:10.5px;color:var(--ink-soft);
+    text-transform:uppercase;letter-spacing:.28em;font-weight:600;
+    font-family:inherit;
+  }
+  .meta .name{
+    font-family:"Source Serif Pro","Noto Serif SC",serif;
+    font-size:19px;font-weight:600;
+  }
+  .meta .biz{
+    font-size:12.5px;color:var(--accent-2);margin-top:4px;
+    letter-spacing:.05em;font-style:italic;
+  }
+  .meta .month{
+    font-size:11.5px;color:var(--ink-soft);margin-top:10px;
+    line-height:1.7;
+  }
+  .badge{
+    display:inline-block;font-size:10px;padding:1px 8px;
+    background:var(--panel);border:1px solid var(--rule-strong);
+    color:var(--ink-soft);margin-left:6px;letter-spacing:.1em;
+    text-transform:uppercase;
+  }
+  .stat{margin-bottom:9px}
+  .stat .lbl{display:flex;justify-content:space-between;font-size:12px;margin-bottom:3px;color:var(--ink-soft)}
+  .stat .lbl span:last-child{color:var(--ink);font-variant-numeric:tabular-nums;font-weight:600}
+  .bar{height:3px;background:var(--bg-2);overflow:hidden;position:relative}
+  .bar > i{display:block;height:100%;background:var(--ink);transition:width .4s}
+  .bar.good > i{background:var(--good)}
+  .bar.bad > i{background:var(--bad)}
+  .bar.info > i{background:var(--info)}
+
+  .money{
+    display:flex;justify-content:space-between;align-items:baseline;
+    padding:14px 0;border-top:1px solid var(--rule);border-bottom:1px solid var(--rule);
+    margin-bottom:14px;
+  }
+  .money > div{flex:1}
+  .money > div + div{text-align:right}
+  .money .v{
+    font-size:20px;font-weight:600;color:var(--ink);
+    font-variant-numeric:tabular-nums;
+    font-family:"Source Serif Pro",serif;
+  }
+  .money .l{font-size:10.5px;color:var(--ink-soft);letter-spacing:.18em;text-transform:uppercase;margin-bottom:3px}
+
+  .stage-row{display:flex;gap:0;flex-wrap:wrap;border:1px solid var(--rule)}
+  .stage-chip{
+    flex:1;text-align:center;font-size:10px;padding:7px 4px;
+    color:var(--dim);min-width:44px;letter-spacing:.05em;
+    border-right:1px solid var(--rule);background:var(--bg);
+  }
+  .stage-chip:last-child{border-right:none}
+  .stage-chip.active{background:var(--ink);color:var(--bg);font-weight:600}
+  .stage-chip.done{background:var(--panel);color:var(--accent)}
+
+  .scene{padding:0 0 0 8px}
+  .scene .turn-head{
+    display:flex;justify-content:space-between;align-items:baseline;
+    border-bottom:1px solid var(--rule);padding-bottom:12px;margin-bottom:24px;
+  }
+  .scene .turn-head .title{
+    font-size:10.5px;color:var(--ink-soft);
+    letter-spacing:.22em;text-transform:uppercase;
+  }
+  .scene .turn-head .cat{
+    font-size:10.5px;color:var(--accent-2);
+    letter-spacing:.22em;text-transform:uppercase;font-weight:600;
+  }
+  .speaker{display:flex;align-items:center;gap:14px;margin-bottom:14px}
+  .avatar{
+    width:42px;height:42px;border-radius:50%;
+    background:var(--panel);border:1px solid var(--rule-strong);
+    display:flex;align-items:center;justify-content:center;
+    font-size:18px;color:var(--ink);
+    font-family:"Cormorant Garamond","Source Serif Pro",serif;
+    font-style:italic;font-weight:600;
+  }
+  .speaker .who{
+    font-family:"Source Serif Pro","Noto Serif SC",serif;
+    font-weight:600;font-size:15.5px;
+  }
+  .speaker .role{font-size:12px;color:var(--ink-soft);font-style:italic;margin-top:2px}
+  .dialogue{
+    font-size:19px;font-style:italic;line-height:1.7;
+    border-left:2px solid var(--accent);
+    padding:4px 0 4px 22px;
+    margin-bottom:28px;color:var(--ink);
+    white-space:pre-wrap;
+    font-family:"Source Serif Pro","Noto Serif SC",serif;
+  }
+
+  .choices{display:flex;flex-direction:column;gap:0;border-top:1px solid var(--rule)}
+  .choice{
+    background:transparent;border:none;border-bottom:1px solid var(--rule);
+    padding:18px 4px 18px 36px;text-align:left;
+    color:var(--ink);font-size:15px;line-height:1.7;
+    transition:.18s;position:relative;font-family:inherit;
+  }
+  .choice::before{
+    content:counter(choice,upper-roman) ".";
+    counter-increment:choice;
+    position:absolute;left:0;top:18px;
+    font-style:italic;color:var(--accent-2);
+    font-family:"Cormorant Garamond",serif;
+    font-size:16px;font-weight:600;letter-spacing:.05em;
+  }
+  .choices{counter-reset:choice}
+  .choice:hover{background:var(--panel);padding-left:42px}
+  .choice .ct{display:block;font-weight:500}
+  .choice .hint{
+    display:block;color:var(--ink-soft);font-size:12.5px;
+    margin-top:4px;font-style:italic;
+  }
+
+  .result{
+    border-left:2px solid var(--good);padding:6px 0 6px 22px;
+    line-height:1.75;font-size:15px;margin:24px 0 18px;
+    font-family:"Source Serif Pro","Noto Serif SC",serif;
+  }
+  .result.bad{border-left-color:var(--bad)}
+  .result.info{border-left-color:var(--info)}
+  .deltas{display:flex;flex-wrap:wrap;gap:10px;margin-top:14px}
+  .delta{
+    font-size:11px;padding:2px 0;color:var(--ink-soft);
+    letter-spacing:.08em;
+  }
+  .delta.pos{color:var(--good)}
+  .delta.neg{color:var(--bad)}
+  .delta::before{content:"·";margin-right:6px;color:var(--rule-strong)}
+  .delta:first-child::before{content:""}
+
+  .next-btn{
+    margin-top:18px;background:transparent;color:var(--ink);
+    padding:10px 22px;font-family:inherit;font-size:12px;
+    letter-spacing:.18em;text-transform:uppercase;
+    border:1px solid var(--ink);
+  }
+  .next-btn:hover{background:var(--ink);color:var(--bg)}
+
+  /* ===== 报告页 ===== */
+  .report{max-width:880px;margin:0 auto}
+  .report .ending-kicker{
+    text-align:center;margin-bottom:8px;
+  }
+  .report .ending-type{
+    display:inline-block;font-size:10.5px;
+    letter-spacing:.32em;text-transform:uppercase;font-weight:600;
+    padding:4px 12px;border:1px solid currentColor;
+  }
+  .end-good{color:var(--good)}
+  .end-bad{color:var(--bad)}
+  .end-mid{color:var(--info)}
+  .report h3{
+    font-size:42px;margin:14px 0 14px;text-align:center;
+    font-weight:500;letter-spacing:-.005em;line-height:1.2;
+  }
+  .report .end-desc{
+    text-align:center;color:var(--ink-soft);font-size:16px;
+    max-width:620px;margin:0 auto 36px;line-height:1.85;
+    font-style:italic;
+  }
+  .divider-line{
+    text-align:center;margin:36px 0 28px;
+    color:var(--rule-strong);font-size:14px;letter-spacing:.4em;
+  }
+
+  /* 原型卡 */
+  .archetype{
+    text-align:center;padding:42px 32px;
+    background:var(--panel);border:1px solid var(--rule);
+    border-top:2px solid var(--ink);
+    margin:28px 0;
+  }
+  .archetype .latin{
+    font-family:"Cormorant Garamond","Source Serif Pro",serif;
+    font-style:italic;font-size:14px;
+    letter-spacing:.28em;color:var(--accent-2);
+    text-transform:uppercase;font-weight:600;
+  }
+  .archetype .zh{
+    font-size:38px;font-weight:500;margin:14px 0 10px;
+    letter-spacing:.04em;
+    font-family:"Source Serif Pro","Noto Serif SC",serif;
+  }
+  .archetype .one-liner{
+    font-size:15.5px;color:var(--ink-soft);max-width:560px;
+    margin:0 auto;line-height:1.85;font-style:italic;
+  }
+
+  /* 性格雷达 */
+  .trait-section{margin:36px 0}
+  .trait-section h4{
+    font-size:11px;letter-spacing:.28em;text-transform:uppercase;
+    color:var(--ink-soft);text-align:center;margin:0 0 24px;font-weight:600;
+  }
+  .trait-grid{
+    display:grid;grid-template-columns:1fr 1fr;gap:36px;align-items:center;
+  }
+  @media (max-width:780px){.trait-grid{grid-template-columns:1fr}}
+  .trait-bars{display:flex;flex-direction:column;gap:18px}
+  .trait-bar{position:relative}
+  .trait-bar .head{
+    display:flex;justify-content:space-between;
+    font-size:11px;letter-spacing:.16em;text-transform:uppercase;
+    color:var(--ink-soft);margin-bottom:8px;font-weight:600;
+  }
+  .trait-bar .head .axis-end{font-style:italic;color:var(--dim)}
+  .trait-bar .track{
+    height:2px;background:var(--rule);position:relative;
+  }
+  .trait-bar .center-mark{
+    position:absolute;left:50%;top:-4px;width:1px;height:10px;
+    background:var(--ink-soft);transform:translateX(-50%);
+  }
+  .trait-bar .dot{
+    position:absolute;top:50%;width:12px;height:12px;
+    border-radius:50%;background:var(--accent);
+    transform:translate(-50%,-50%);
+    box-shadow:0 0 0 4px var(--bg);
+  }
+  .trait-bar .interp{
+    font-size:13px;color:var(--ink);font-style:italic;
+    margin-top:8px;line-height:1.6;
+  }
+
+  /* 报告分栏 */
+  .report-grid{
+    display:grid;grid-template-columns:1fr 1fr;gap:0;
+    border-top:1px solid var(--rule);
+    margin-top:28px;
+  }
+  @media (max-width:820px){.report-grid{grid-template-columns:1fr}}
+  .panel{
+    padding:24px;border-right:1px solid var(--rule);
+    border-bottom:1px solid var(--rule);background:transparent;
+  }
+  .panel:nth-child(2n){border-right:none}
+  @media (max-width:820px){.panel{border-right:none}}
+  .panel h4{
+    margin:0 0 16px;font-size:11px;
+    letter-spacing:.28em;text-transform:uppercase;
+    color:var(--accent-2);font-weight:600;
+  }
+  .score-big{
+    font-family:"Cormorant Garamond","Source Serif Pro",serif;
+    font-size:72px;font-weight:500;color:var(--ink);
+    line-height:1;font-style:italic;letter-spacing:-.01em;
+  }
+  .title-big{
+    font-size:20px;color:var(--ink);margin-top:10px;font-weight:600;
+    font-family:"Source Serif Pro","Noto Serif SC",serif;
+  }
+  .desc{
+    color:var(--ink-soft);font-size:14px;margin-top:8px;line-height:1.75;
+  }
+  .kv{
+    display:flex;justify-content:space-between;padding:9px 0;
+    border-bottom:1px solid var(--rule);font-size:13.5px;
+  }
+  .kv:last-child{border-bottom:none}
+  .kv span:first-child{color:var(--ink-soft);letter-spacing:.05em}
+  .kv span:last-child{color:var(--ink);font-weight:600;font-variant-numeric:tabular-nums}
+  .timeline{max-height:380px;overflow:auto;padding-right:6px}
+  .timeline .item{
+    padding:11px 0;border-bottom:1px solid var(--rule);
+    font-size:13.5px;line-height:1.7;
+  }
+  .timeline .item:last-child{border-bottom:none}
+  .timeline .m{
+    color:var(--accent-2);font-size:10.5px;
+    letter-spacing:.15em;text-transform:uppercase;
+    margin-right:8px;font-weight:600;
+  }
+  .timeline .item b{
+    display:block;margin-top:4px;color:var(--ink);font-weight:600;
+  }
+  .timeline .item .r{
+    display:block;color:var(--ink-soft);font-style:italic;margin-top:3px;
+  }
+
+  /* 方向性建议 */
+  .advice-section{
+    margin-top:32px;padding:28px 32px;
+    background:var(--panel);border:1px solid var(--rule);
+    border-left:3px solid var(--accent);
+  }
+  .advice-section h4{
+    font-size:11px;letter-spacing:.28em;text-transform:uppercase;
+    color:var(--accent-2);margin:0 0 8px;font-weight:600;
+  }
+  .advice-section .sub{
+    font-size:13.5px;color:var(--ink-soft);font-style:italic;margin-bottom:18px;
+  }
+  .advice-list{padding:0;margin:0;list-style:none}
+  .advice-list li{
+    padding:14px 0 14px 32px;border-bottom:1px solid var(--rule);
+    position:relative;font-size:15px;line-height:1.8;
+  }
+  .advice-list li:last-child{border-bottom:none}
+  .advice-list li::before{
+    content:counter(advice);counter-increment:advice;
+    position:absolute;left:0;top:14px;
+    font-family:"Cormorant Garamond",serif;
+    font-style:italic;font-size:18px;color:var(--accent-2);
+    font-weight:600;
+  }
+  .advice-list{counter-reset:advice}
+  .advice-list li b{display:block;color:var(--ink);font-weight:600;margin-bottom:2px}
+  .advice-list li span{display:block;color:var(--ink-soft);font-size:13.5px;line-height:1.7}
+
+  .lessons{
+    font-size:14.5px;line-height:1.85;color:var(--ink-soft);
+    list-style:none;padding:0;margin:0;
+  }
+  .lessons li{
+    margin-bottom:10px;padding-left:18px;position:relative;
+  }
+  .lessons li::before{
+    content:"§";position:absolute;left:0;top:0;
+    color:var(--accent-2);font-style:italic;
+  }
+
+  /* Toast */
+  .toast{
+    position:fixed;bottom:30px;left:50%;transform:translateX(-50%);
+    background:var(--ink);color:var(--bg);
+    padding:10px 18px;font-size:12.5px;letter-spacing:.1em;
+    opacity:0;pointer-events:none;transition:.25s;
+  }
+  .toast.show{opacity:1;transform:translate(-50%,-8px)}
+
+  .hide{display:none !important}
+  .center{text-align:center}
+  .mt{margin-top:14px}
+  .footer{
+    margin-top:60px;color:var(--dim);font-size:11px;text-align:center;
+    letter-spacing:.18em;text-transform:uppercase;
+    padding-top:24px;border-top:1px solid var(--rule);
+  }
+</style>
+</head>
+<body>
+<div class="app">
+  <div class="topbar">
+    <div class="brand">
+      <div class="logo">F</div>
+      <div>
+        <h1>Founder Sim</h1>
+        <small>A Reading of the Founder</small>
+      </div>
+    </div>
+    <div>
+      <button id="restartBtn" class="ghost hide">重新开始</button>
+    </div>
+  </div>
+
+  <!-- 起始页 -->
+  <section id="screen-start">
+    <div class="hero">
+      <span class="kicker">Issue No.01 · 创业人格剖析</span>
+      <h2>每一次决策,都是一次<em>对自己的供述</em>。</h2>
+      <div class="rule"></div>
+      <p class="lede">这不是一款关于胜负的游戏。<br/>
+你将在 30+ 个真实创业决策里——融资、招人、危机、家庭、健康、学习——一次次选择。<br/>
+等剧本走到尽头,我们会把这些选择拼回成一份关于<em>你</em>的报告:你的风险偏好、你对控制与信任的态度、你看时间的长度、你对人的关怀、你向自己学习的能力——以及由此推导的方向性建议。</p>
+      <button class="start-btn" onclick="goSetup()">开始这次阅读</button>
+      <div class="feat">
+        <div class="card"><div class="num">— I —</div><b>30+ 决策</b><span>每个选择都被悄悄记下,作为你性格的一个证据。没有撤销,没有重来。</span></div>
+        <div class="card"><div class="num">— II —</div><b>5 个维度</b><span>风险偏好、控制 / 分权、时间视角、人本关怀、认知开放——创业语境下五个最难掩饰的维度。</span></div>
+        <div class="card"><div class="num">— III —</div><b>8 种原型</b><span>从「务实合伙型」到「激进孤狼型」,八种创业者人格,你会落入哪一格?</span></div>
+        <div class="card"><div class="num">— IV —</div><b>方向建议</b><span>结尾不只是评分,而是一份给你的报告:你适合做什么样的事、要补什么样的人、要警惕什么。</span></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- 选择方向 -->
+  <section id="screen-setup" class="hide setup">
+    <span class="kicker">Chapter I · 选择剧本</span>
+    <h3>你的赛道</h3>
+    <p class="sub">不同方向有不同的初始数值、专属事件和退出路径。选错方向不会立刻死,但会让某些关卡变得格外难。<br/>同样的人,在不同的赛道里,会暴露出完全不同的性格侧面。</p>
+    <div class="row" id="dirList"></div>
+
+    <div class="form mt">
+      <div class="grid2">
+        <div>
+          <label>署名 / 创始人姓名</label>
+          <input id="founderName" placeholder="陈一" />
+        </div>
+        <div>
+          <label>公司名</label>
+          <input id="companyName" placeholder="回声科技" />
+        </div>
+      </div>
+      <div class="mt center" style="margin-top:24px">
+        <button id="goBtn" class="primary" disabled onclick="startGame()">开始这次阅读</button>
+      </div>
+    </div>
+  </section>
+
+  <!-- 游戏页 -->
+  <section id="screen-game" class="hide game">
+    <aside class="stats-panel" id="statsPanel"></aside>
+    <main class="scene" id="scene"></main>
+  </section>
+
+  <!-- 结局报告 -->
+  <section id="screen-report" class="hide report"></section>
+
+  <div class="footer">Founder Sim · 单文件离线运行 · 数据仅保存在浏览器内存 · 关闭页面即清除</div>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script>
+/* =========================================================
+ * Founder Sim — 创业人生模拟器
+ * 纯前端剧情引擎 + 数值系统
+ * ========================================================= */
+
+// ---------- 创业方向定义 ----------
+const DIRECTIONS = [
+  {
+    id:'saas',
+    name:'SaaS 企业服务',
+    tag:'高毛利 · 长周期',
+    desc:'卖工具给企业,客户决策慢但留存高,适合工程师创业。早期靠 PMF,中期靠销售。',
+    start:{cash:80,mrr:0,product:25,tech:45,market:18,marketing:10,pr:12,team:18,health:65,learning:55},
+    burnMul:1.0,
+    exits:['IPO上市','被巨头收购','现金牛持续经营']
+  },
+  {
+    id:'social',
+    name:'消费社交 App',
+    tag:'爆款 · 高风险',
+    desc:'C 端社交、内容、约会类。要么爆要么死,网络效应一旦形成估值飞天,但获客成本会越来越贵。',
+    start:{cash:60,mrr:0,product:30,tech:30,market:42,marketing:32,pr:25,team:18,health:55,learning:45},
+    burnMul:1.4,
+    exits:['IPO上市','被大厂收购','下载量持续千万级']
+  },
+  {
+    id:'ecom',
+    name:'新消费 / 电商品牌',
+    tag:'重运营 · 现金流敏感',
+    desc:'做品牌,做品类。需要更多启动资金、更敏感的供应链与现金流管理,公关一次崩盘可能伤筋动骨。',
+    start:{cash:100,mrr:0,product:38,tech:18,market:48,marketing:42,pr:30,team:30,health:55,learning:35},
+    burnMul:1.2,
+    exits:['上市','被消费集团收购','成为细分类目第一']
+  },
+  {
+    id:'hardware',
+    name:'智能硬件',
+    tag:'重资产 · 高门槛',
+    desc:'软硬一体,前期烧钱开模、供应链、认证。一旦量产成功护城河极深,但一次品控翻车就可能全完。',
+    start:{cash:150,mrr:0,product:18,tech:60,market:22,marketing:15,pr:22,team:35,health:50,learning:60},
+    burnMul:1.6,
+    exits:['上市','被产业方收购','成为出货百万的品类领导者']
+  },
+  {
+    id:'ai',
+    name:'AI 应用',
+    tag:'技术红利 · 强不确定',
+    desc:'基于大模型做应用。技术演进飞快,你既要跑得快,又要担心被基座厂商一夜超越。',
+    start:{cash:70,mrr:0,product:28,tech:70,market:25,marketing:20,pr:32,team:14,health:60,learning:72},
+    burnMul:1.3,
+    exits:['上市','被 AI 巨头并购','成为 AI 时代的入口型产品']
+  },
+  {
+    id:'content',
+    name:'内容 / 游戏工作室',
+    tag:'高创意 · 低边际',
+    desc:'做付费内容、漫画、独立游戏。爆款不可预测,但一旦命中边际成本极低,口碑会反复给你机会。',
+    start:{cash:50,mrr:0,product:35,tech:42,market:38,marketing:35,pr:28,team:22,health:58,learning:55},
+    burnMul:0.9,
+    exits:['作品出圈、工作室上市','被发行/平台收购','拥有铁杆粉丝,持续盈利']
+  }
+];
+
+// ---------- 阶段 ----------
+const STAGES = ['种子','天使','Pre-A','A轮','B轮','C轮','上市/退出'];
+
+// ---------- 数值字段元数据 ----------
+const FIELDS = [
+  {k:'product',     name:'产品'},
+  {k:'tech',        name:'技术'},
+  {k:'market',      name:'市场'},
+  {k:'marketing',   name:'营销'},
+  {k:'pr',          name:'品牌公关'},
+  {k:'team',        name:'团队'},
+  {k:'health',      name:'个人健康'},
+  {k:'learning',    name:'认知学习'}
+];
+
+// ---------- 事件库 ----------
+// 通用事件 + 方向专属事件 + 个人 + 危机 + 融资事件
+// effect: 字段→变化值;cash 单位万元;mrr 单位万元/月
+// when: 函数(state)=>bool
+const EVENTS = [];
+
+function E(o){EVENTS.push(o)}
+
+/* ---------- 早期通用事件 ---------- */
+E({
+  id:'cofounder_equity', cat:'团队', tier:[1,4],
+  speaker:'老周', role:'你的联合创始人',
+  text:'"哥们,公司算是真正开始了。我们三个的股权该定一下。我跟阿杰的意见不太一样,你这个 CEO 必须拍板:你要 70% 我跟阿杰各 15%,还是你 51% 我们各 24.5%,还是我们三个三三制?"',
+  choices:[
+    {ct:'我拿 70%,你们各 15%。我是 CEO,出问题我担责。',
+     hint:'团队稳定性下降,但控制权更强',
+     eff:{team:-8,pr:-3,learning:+2}, res:'老周沉默了一下,点点头:"行,你说了算。"阿杰看起来有些情绪,接下来几周代码提交少了一半。'},
+    {ct:'我拿 51%,你们各 24.5%,保留控制权。',
+     hint:'相对均衡',
+     eff:{team:+2,learning:+3}, res:'阿杰说:"这样我心里舒服,我会拼命干。" 老周也点头,事先签好了一致行动人协议,这家公司算是真正合伙起来了。'},
+    {ct:'三三制,谁也不多,谁也不少。',
+     hint:'看起来公平,埋雷',
+     eff:{team:+6,pr:-2,learning:-3}, res:'团结的氛围下你们击了掌,但你心里清楚:VC 看见三三制会皱眉,以后大决策一旦分歧,你将没有最终决策权。'}
+  ]
+});
+
+E({
+  id:'first_customer', cat:'市场', tier:[1,3],
+  speaker:'一位陌生人', role:'某公司产品总监',
+  text:'"你好,我在朋友圈看到你们做的东西。我们公司现在被这个问题折磨得死去活来,如果你愿意按我们的需求定制一版,我可以给你打 20 万。"',
+  choices:[
+    {ct:'接!定制开发,有钱拿活下来再说。',
+     hint:'短期现金 + 长期偏离主线',
+     eff:{cash:+20,product:-4,tech:+5,market:+4,learning:+2,health:-3}, res:'你们卡进度做了三个月定制,客户付了钱,但产品主线版本几乎没动。'},
+    {ct:'告诉对方我们的产品方向就是这个,但不做完全定制,愿意试用 + 一起共创。',
+     hint:'稳健,种子客户',
+     eff:{cash:+6,product:+6,market:+8,pr:+3,team:+2}, res:'对方答应了。这是你的第一个真实付费验证,虽然钱不多,但你拿到了第一个 logo,产品方向更扎实了。'},
+    {ct:'婉拒,继续专注通用产品。',
+     hint:'最纯粹,最饿',
+     eff:{cash:-2,product:+5,market:-3,health:-3,learning:+4}, res:'你拒掉了 20 万。团队有点不解,但你坚信通用产品做扎实才有未来。账上钱又少了一点。'}
+  ]
+});
+
+E({
+  id:'star_engineer', cat:'团队', tier:[1,4],
+  speaker:'猎头朋友', role:'介绍人',
+  text:'"我手上有个候选人,前大厂技术专家,要价比预算高 50%,但带过百万 DAU 项目。要见吗?"',
+  choices:[
+    {ct:'见,挤预算也要拿下。',
+     hint:'技术暴涨,现金压力',
+     eff:{cash:-10,tech:+12,team:+5,product:+3,learning:+3}, res:'你说服他降了一点薪,加了期权。他来了之后,技术架构稳了一个量级。'},
+    {ct:'见,但谈一个低于他预期的薪资+ 双倍期权。',
+     hint:'考验你的画饼能力',
+     eff:{cash:-4,tech:+8,team:+3,pr:+2,learning:+4}, res:'你跟他聊了四个小时创业的梦想和未来。他答应了打折现金的 offer,你省下了不少现金。'},
+    {ct:'不见,先把自己人培养起来。',
+     hint:'稳但慢',
+     eff:{tech:-1,team:+3,learning:+2}, res:'你跟现有团队说"我们一起练级",团队凝聚力上升,但短期内技术天花板没被拉起来。'}
+  ]
+});
+
+E({
+  id:'angel_coffee', cat:'融资', tier:[1,3],
+  speaker:'一位天使投资人', role:'前连续创业者',
+  text:'"我打算投你们 300 万,占 20%。我条件就一个:每月给我写一份业务月报,我会给你介绍客户。"',
+  choices:[
+    {ct:'接受,300 万救命钱 + 行业资源。',
+     hint:'现金大幅增加,稀释 20%',
+     eff:{cash:+300,market:+6,pr:+8,learning:+5}, set:{angelIn:true,equityDiluted:20}, res:'打款很快到账。你第一次感受到"账上有钱"的安全感。月报压力也开始了。'},
+    {ct:'再聊聊,我希望估值再抬一点,占 12%。',
+     hint:'考验融资能力',
+     eff:{cash:+200,pr:+5,learning:+6,health:-4}, set:{angelIn:true,equityDiluted:12}, res:'你来回拉扯了两周,他笑着说"行,看你狠,我占 12%,投 200 万",你赢了估值,失了点筹码。'},
+    {ct:'婉拒,自己再扛一阵。',
+     hint:'不稀释但很饿',
+     eff:{cash:-3,pr:+2,learning:+4,health:-5}, res:'你想再扛半年,等更高估值。账上的钱在缩水,夜里你开始数自己还能撑几个月。'}
+  ]
+});
+
+E({
+  id:'product_bug', cat:'危机', tier:[1,5],
+  speaker:'客服小妹', role:'一脸惊慌',
+  text:'"老板!线上崩了!付款功能挂了一晚上,用户在群里炸了,有人说要去黑猫投诉……"',
+  choices:[
+    {ct:'立刻全员通宵抢修,我发公开声明致歉 + 双倍补偿。',
+     hint:'消耗团队和现金,但挽回信任',
+     eff:{cash:-6,tech:+4,team:-4,pr:+8,health:-8}, res:'四个小时后系统恢复,你的公开信被转发了几千次,有用户说"敢认错的团队值得再给一次机会"。'},
+    {ct:'修复 + 私下补偿,不发公开声明。',
+     hint:'低成本,但风险存在',
+     eff:{cash:-2,tech:+2,pr:-4,health:-3}, res:'问题解决了,但几位 KOL 用户私下截图,在小范围群里发酵。'},
+    {ct:'甩锅给云厂商,先稳住客户。',
+     hint:'短期省事,长期失信',
+     eff:{pr:-12,team:-5,learning:-3}, res:'第二天云厂商公开发了说明:"我们没问题。" 这下尴尬了,品牌信任度一夜回到解放前。'}
+  ]
+});
+
+E({
+  id:'late_night_relationship', cat:'生活', tier:[1,9],
+  speaker:'对象', role:'坐在沙发上',
+  text:'"你最近三周回家都过 12 点,昨天我妈过生日你也忘了。你能不能告诉我:这件事到底什么时候是个头?"',
+  choices:[
+    {ct:'认真道歉,定个固定家庭时间,雷打不动。',
+     hint:'健康和关系会回血',
+     eff:{health:+6,learning:+3,product:-2,team:-1}, res:'你删掉了一个周末会议,陪 ta 去了趟郊区。回来的时候你发现自己确实久违地睡了个好觉。'},
+    {ct:'解释:再撑三个月,过了这一关就好。',
+     hint:'拖延型回答',
+     eff:{health:-3,pr:-1,learning:-2}, res:'ta 没再吵,但你能感觉到一点东西凉了下去。你忙得没空想这件事。'},
+    {ct:'坦诚:我现在做不到平衡,你愿意等我吗?',
+     hint:'坦白可能更稳',
+     eff:{health:-2,learning:+4}, res:'ta 沉默了很久,说"我尽量等,但你也要尊重我"。这次对话之后,你们达成了一种沉默的契约。'}
+  ]
+});
+
+E({
+  id:'key_employee_quit', cat:'团队', tier:[2,9],
+  speaker:'阿杰', role:'核心工程师',
+  text:'"老板,大厂给我开了你这边两倍的薪。我犹豫了三个晚上……你打算怎么留我?"',
+  choices:[
+    {ct:'匹配薪资 + 额外加期权。',
+     hint:'消耗现金,但留住关键人',
+     eff:{cash:-12,team:+8,tech:+5,health:-2}, res:'阿杰被你打动了。他说:"那我再陪你一年。" 你账上钱少了一截,但这件事在团队里传开,大家心里更踏实。'},
+    {ct:'真诚谈话,不加薪,但给他更大职责和股权。',
+     hint:'看你画饼能力',
+     eff:{team:+4,tech:+3,learning:+4,pr:+2,health:-3}, res:'你聊了四个小时,从产品、行业聊到他个人成长。他最后说:"行,我赌你。"'},
+    {ct:'尊重选择,放他走,提前做好交接。',
+     hint:'痛但成熟',
+     eff:{tech:-10,team:-6,pr:+3,learning:+5}, res:'你帮他写了推荐信。团队短期受损,但你处理得体的态度也让剩下的人愿意继续陪你。'}
+  ]
+});
+
+E({
+  id:'media_pitch', cat:'公关', tier:[2,8],
+  speaker:'科技媒体记者', role:'微信弹窗',
+  text:'"我们想做一期你的封面专访,标题倾向于「90 后 CEO 单挑大厂」。你看 OK 吗?"',
+  choices:[
+    {ct:'接受,流量第一,先红再说。',
+     hint:'声量暴涨,但树敌',
+     eff:{pr:+15,market:+8,marketing:+5,team:-3,health:-3}, res:'文章爆了,简历雪片飞来,但大厂相关业务线也开始留意你了。'},
+    {ct:'接受,但改标题成「我们如何服务好 100 个客户」。',
+     hint:'品牌长期值',
+     eff:{pr:+8,market:+4,learning:+4,marketing:+2}, res:'文章不温不火,但行业里几个真正懂的人记住了你。一周后又来了两位投资人。'},
+    {ct:'婉拒,现在不是宣传的时候。',
+     hint:'最保守',
+     eff:{pr:-2,learning:+3,health:+2}, res:'你回复"暂时不接受采访,谢谢"。错过这一波,但团队心里踏实。'}
+  ]
+});
+
+E({
+  id:'pivot_question', cat:'产品', tier:[2,7],
+  speaker:'用户访谈结论', role:'内部讨论会',
+  text:'"我们采访了 30 个深度用户,发现 65% 的人其实是在用我们做另一件事——他们更愿意为「数据导出」付费,而不是我们现在的主功能。要不要 pivot?"',
+  choices:[
+    {ct:'果断 pivot,把数据导出做成主线。',
+     hint:'风险与机会并存',
+     eff:{product:+12,tech:+4,market:+10,team:-4,learning:+8,health:-4}, res:'你们花了 6 周大改产品。两个老员工离开了,但新方向上线第一周 MRR 涨了 30%。'},
+    {ct:'保留主线,把数据导出做成强 add-on。',
+     hint:'稳健折中',
+     eff:{product:+6,market:+6,marketing:+3,team:+1}, res:'你们做了功能融合,客单价上去了,但故事变得有点复杂。'},
+    {ct:'坚持原方向,用户没真正懂我们。',
+     hint:'信仰',
+     eff:{product:+2,learning:-3,market:-5,team:-2}, res:'你坚信原方向。半年后回头看,你不确定那是不是错过了一次 PMF 信号。'}
+  ]
+});
+
+E({
+  id:'regulator_call', cat:'公关', tier:[3,9],
+  speaker:'监管部门朋友', role:'电话里',
+  text:'"我提前给你打个招呼:你们行业接下来可能有新规出来,数据采集那块要严管。你要不要趁现在调整?"',
+  choices:[
+    {ct:'立刻自查 + 主动合规化,把合规当卖点。',
+     hint:'短期慢,长期赢',
+     eff:{cash:-8,product:+3,pr:+8,learning:+6,tech:+4}, res:'三个月后新规落地,半数同行被点名整改,你成了被监管点名表扬的样板。'},
+    {ct:'保持现状,先做大业务再说。',
+     hint:'赌博',
+     eff:{market:+3,pr:-2,health:-2,learning:-3}, res:'短期没事,但你也开始失眠。每天打开新闻都担心被点名。'},
+    {ct:'去咨询律师,只调整最高风险的部分。',
+     hint:'折中',
+     eff:{cash:-3,pr:+3,learning:+3,tech:+1}, res:'你做了最关键的几条调整。新规落地时,你刚好踩在合规线之上,惊险过关。'}
+  ]
+});
+
+E({
+  id:'health_warning', cat:'生活', tier:[3,12],
+  speaker:'体检医生', role:'报告单背后',
+  text:'"你这个状态,如果不调整作息,半年内大概率会出问题。我建议你立刻减少工作强度。"',
+  choices:[
+    {ct:'听医生的,从下周开始每天 11 点前睡。',
+     hint:'健康回血',
+     eff:{health:+15,learning:+4,product:-2,marketing:-2}, res:'你强制把日程砍掉 1/3。两个月后,你发现自己反而做了更多重要决策。'},
+    {ct:'吃保健品撑过这一阵,等融完资再说。',
+     hint:'拖',
+     eff:{cash:-2,health:-6,learning:-2}, res:'你买了一柜子保健品。短期感觉好一点,但你心里清楚问题没有解决。'},
+    {ct:'直接住院调理一周,把公司交给老周。',
+     hint:'考验团队成熟度',
+     eff:{health:+12,team:+4,product:-3,marketing:-3,learning:+3}, res:'你强制下线一周,意外发现公司没你也能转。这是个重要发现。'}
+  ]
+});
+
+E({
+  id:'pricing_change', cat:'市场', tier:[2,7],
+  speaker:'增长负责人', role:'数据复盘会',
+  text:'"我们目前的客单价偏低,如果提价 50%,转化率可能掉 20%,但单客收入会涨。要不要试?"',
+  choices:[
+    {ct:'提价 50%,赌高价带来的高质量客户。',
+     hint:'短期 MRR 上,长期看效果',
+     eff:{mrr:+4,market:-3,marketing:-2,product:+2,learning:+4}, res:'转化率确实掉了,但留下来的客户更精准、更愿意配合做案例。'},
+    {ct:'分层定价:基础版降价,旗舰版涨价。',
+     hint:'最稳的一招',
+     eff:{mrr:+3,market:+4,marketing:+3,learning:+5}, res:'分层结构让你的获客漏斗变健康了,大客户开始主动来咨询。'},
+    {ct:'保持当前价格,继续打规模。',
+     hint:'继续烧',
+     eff:{mrr:+1,market:+3,marketing:+2}, res:'增长曲线没变,但你心里清楚下一轮投资人会盯单客经济。'}
+  ]
+});
+
+E({
+  id:'pr_attack', cat:'危机', tier:[2,12],
+  speaker:'公关朋友', role:'微信弹窗',
+  text:'"出大事了——一个百万粉博主发文骂你们,说你们的产品「割韭菜」。评论区已经几千条了。"',
+  choices:[
+    {ct:'第一时间发长文回应,数据+事实+真诚。',
+     hint:'考验你的写作和心态',
+     eff:{pr:+10,marketing:+3,learning:+6,health:-5}, res:'你 4 小时写完一篇 5000 字回应,逻辑清晰、态度真诚,被另一波 KOL 主动转发,舆论反转。'},
+    {ct:'走法律途径,正式发律师函。',
+     hint:'激进',
+     eff:{cash:-4,pr:-5,marketing:-3,health:-4}, res:'律师函发出去当天,博主公开晒出截图,舆论倒向"店大欺客",更糟。'},
+    {ct:'冷处理,继续做产品。',
+     hint:'看时间是否站在你这边',
+     eff:{pr:-6,marketing:-3,product:+2,health:-3}, res:'两周后舆论散了一些,但搜索你公司的人都会看到那篇文章。'}
+  ]
+});
+
+E({
+  id:'big_client_demand', cat:'市场', tier:[2,8],
+  speaker:'某大客户采购总监', role:'视频会议',
+  text:'"我们公司打算签百万级合同,但有个条件:必须用我们公司的服务器、必须本地部署、必须 7×24 上门驻场。你能接吗?"',
+  choices:[
+    {ct:'接!百万合同对现金流是救命稻草。',
+     hint:'方向短期偏离,但有钱',
+     eff:{cash:+80,mrr:+5,team:-3,product:-4,tech:-2,health:-5}, res:'你们派了两个工程师驻场。账上有钱了,但产品节奏被打乱,主线慢了一个季度。'},
+    {ct:'谈一个折中:可以本地部署,但驻场改成远程响应 + 季度回访。',
+     hint:'考验你的商务能力',
+     eff:{cash:+50,mrr:+3,product:-1,market:+5,learning:+4,team:+1}, res:'对方同意了。你赢了主动权,客户也满意。'},
+    {ct:'婉拒,坚持产品标准化。',
+     hint:'坚定但难',
+     eff:{cash:-2,market:-3,product:+3,learning:+3,team:-2}, res:'你拒掉了这单生意。团队里有人觉得可惜,但你笃定这条路不能走偏。'}
+  ]
+});
+
+E({
+  id:'open_source_call', cat:'公关', tier:[2,9],
+  speaker:'技术大牛朋友', role:'微信语音',
+  text:'"你们的核心模块要不要考虑开源?开源能极大拉高招聘和品牌,但也会让对手免费拿到。"',
+  choices:[
+    {ct:'开源核心模块的脚手架部分,保留商业内核。',
+     hint:'分层开源,最稳',
+     eff:{pr:+8,tech:+4,team:+3,marketing:+3,learning:+5}, res:'GitHub 仓库一周拿了 2000 星。一位顶级工程师主动加入了你们。'},
+    {ct:'全开源,赌生态。',
+     hint:'激进但高回报',
+     eff:{pr:+15,tech:+2,marketing:+5,market:-3,team:+2,learning:+6}, res:'你们成了行业话题。半年后一家友商基于你的开源做了商业版,但你的品牌已经立住了。'},
+    {ct:'不开源,继续闭门修炼。',
+     hint:'保留竞争力',
+     eff:{tech:+2,marketing:-2,pr:-2}, res:'你继续闷头做产品。技术债减少,但失去了一次品牌爆发的机会。'}
+  ]
+});
+
+E({
+  id:'compete_war', cat:'市场', tier:[2,12],
+  speaker:'分析师朋友', role:'行业群里',
+  text:'"一家融了 5 亿的公司刚发布了和你完全一样的功能,而且免费三个月。你们怎么打?"',
+  choices:[
+    {ct:'差异化:聚焦垂直行业,做对手做不到的深度。',
+     hint:'长期赢的打法',
+     eff:{product:+8,market:+10,marketing:+3,team:+2,learning:+6}, res:'你们砍掉了通用功能,把所有精力 all in 在一个垂直行业。半年后,这个行业里 60% 头部公司用你们。'},
+    {ct:'跟进降价,直接打价格战。',
+     hint:'伤敌一千自损八百',
+     eff:{cash:-15,mrr:-3,market:+4,team:-4,learning:-2,health:-5}, res:'你跟进了免费策略。两个月后,对手又把免费期延长到 6 个月,你撑不动了。'},
+    {ct:'公开站队"我们就是要做小而美",发媒体声明。',
+     hint:'品牌叙事',
+     eff:{pr:+10,market:+4,marketing:+5,learning:+4}, res:'你的声明被广泛转发。"小而美"的标签反而带来了一批高质量客户。'}
+  ]
+});
+
+E({
+  id:'speaker_invite', cat:'公关', tier:[2,12],
+  speaker:'某峰会主办方', role:'邮件',
+  text:'"我们邀请您作为创始人代表,在 5000 人行业峰会上做主题演讲。但需要您本人准备 2 周。"',
+  choices:[
+    {ct:'接受,亲自准备,讲一个真实的故事。',
+     hint:'公关爆发,时间消耗',
+     eff:{pr:+12,marketing:+5,learning:+5,product:-2,health:-4}, res:'你的演讲被剪成短视频在行业群刷屏。一周内来了 50 份高质量简历和 3 个投资人。'},
+    {ct:'让 COO 去,自己专心做产品。',
+     hint:'团队培养',
+     eff:{team:+5,pr:+4,product:+3,learning:+2}, res:'COO 表现不错,公司多了一个对外形象。你赢得了团队的尊重。'},
+    {ct:'婉拒,现在没时间。',
+     hint:'最保守',
+     eff:{pr:-3,product:+2,health:+1}, res:'你专注做产品。一个潜在的爆发机会被你放走,但你内心平静。'}
+  ]
+});
+
+E({
+  id:'invest_self', cat:'学习', tier:[1,12],
+  speaker:'你自己', role:'凌晨 2 点的反思',
+  text:'我最近发现自己越来越只会"应付",好久没真正学过新东西了。要不要给自己一段集中学习时间?',
+  choices:[
+    {ct:'报名一个海外创业课程,每周 8 小时。',
+     hint:'长期认知值,短期分心',
+     eff:{cash:-3,learning:+12,pr:+2,product:-1}, res:'你在课上认识了几位非常厉害的创始人,几个月后他们成了你的智囊团。'},
+    {ct:'每天早起读 1 小时书 + 月度复盘。',
+     hint:'最低门槛,持续复利',
+     eff:{learning:+8,health:-1,product:+2}, res:'三个月后你明显感到决策质量提高了。团队也开始模仿你的复盘习惯。'},
+    {ct:'专注业务,等以后再学。',
+     hint:'短视',
+     eff:{learning:-3,health:-1,product:+1}, res:'你又把书放回了书架。你能感觉到自己的认知带宽,正在被日常事务一点点磨掉。'}
+  ]
+});
+
+E({
+  id:'investor_pressure', cat:'融资', tier:[3,10],
+  speaker:'A 轮领投人', role:'季度会议',
+  text:'"按我们当时的协议,你们的 ARR 应该达到 1500 万。现在只有 900 万。你要给我一个明确的加速计划,不然下一轮的承诺可能要重新评估。"',
+  choices:[
+    {ct:'承诺激进增长目标,加大销售投入。',
+     hint:'高压,高烧钱',
+     eff:{cash:-20,marketing:+8,market:+6,team:-3,health:-6}, res:'你雇了一个销售 VP,激进打款,3 个月后销售管线翻倍,但团队明显疲惫。'},
+    {ct:'实事求是地解释,提出更扎实但更慢的方案。',
+     hint:'考验你和投资人的关系',
+     eff:{pr:+5,learning:+5,health:-3,team:+2}, res:'投资人尊重了你的诚实,但下一轮的领投资格被另一个机构拿走了。'},
+    {ct:'提出战略调整 + 减少烧钱,延长跑道。',
+     hint:'最务实',
+     eff:{cash:+8,team:-2,market:+3,learning:+5,health:-2}, res:'投资人没那么开心,但你赢得了更多时间。你裁掉了表现差的 10% 员工。'}
+  ]
+});
+
+E({
+  id:'team_burnout', cat:'团队', tier:[2,11],
+  speaker:'HR 朋友', role:'内部访谈结论',
+  text:'"做了一轮匿名访谈,核心反馈是「累、不知道为什么累」。要不要做点什么?"',
+  choices:[
+    {ct:'宣布"无会议星期五"+ 每季度强制休假。',
+     hint:'文化建设',
+     eff:{team:+8,health:+3,product:-1,learning:+3}, res:'三个月后离职率下降了 40%,几位老员工写公开信感谢你。'},
+    {ct:'发奖金,真金白银地刺激。',
+     hint:'有效但治标',
+     eff:{cash:-10,team:+5,marketing:-1}, res:'短期内士气提升,但 4 个月后又回到之前的状态。'},
+    {ct:'强调使命感,开一个全员大会鼓劲。',
+     hint:'廉价的鸡汤',
+     eff:{team:-3,pr:+2,learning:-2}, res:'大会上一片掌声,会后小群里全是吐槽。你失去了一些信任。'}
+  ]
+});
+
+/* ---------- 融资类专属事件,会按阶段触发 ---------- */
+E({
+  id:'angel_round', cat:'融资', tier:[1,4], gate:(s)=>s.stage===0 && s.product>=28 && s.market>=22 && !s.flags.raisedAngel,
+  speaker:'天使投资人', role:'决定要投了',
+  text:'"我决定领投你的天使轮,800 万估值 5000 万。这一轮帮你过 18 个月跑道。我会拉两个跟投。"',
+  choices:[
+    {ct:'签!跑道最重要。',
+     hint:'+800 万现金',
+     eff:{cash:+800,pr:+6,learning:+5}, set:{stage:1,raisedAngel:true}, res:'TS 一周内签完,资金分两笔到账。你第一次感受到"已经融到 A 轮以前的"中场休息。'},
+    {ct:'谈到 6000 万估值再签。',
+     hint:'考验你',
+     eff:{cash:+800,pr:+8,learning:+6,health:-3}, set:{stage:1,raisedAngel:true,equityNote:'6000万估值'}, res:'你来回拉扯三次,最后估值压到 6500 万。你赢了筹码,也消耗了不少精力。'}
+  ]
+});
+
+E({
+  id:'a_round', cat:'融资', tier:[3,12], gate:(s)=>s.stage>=1 && s.stage<=2 && (s.mrr>=20 || (s.product>=55 && s.market>=50)) && !s.flags.raisedA,
+  speaker:'A 轮领投合伙人', role:'IC 通过',
+  text:'"我们 IC 通过了,投资意向是估值 5 亿,投 6000 万,你们出 12%。"',
+  choices:[
+    {ct:'同意,签 TS。',
+     hint:'+6000 万现金',
+     eff:{cash:+6000,pr:+15,marketing:+5,team:+4,learning:+8}, set:{stage:3,raisedA:true}, res:'A 轮 close。你第一次去庆功宴,合伙人敬你酒说:"从今天开始,你是被人盯着的人了。"'},
+    {ct:'反提:估值 7 亿,投 8000 万,出 12%。',
+     hint:'高风险高回报',
+     eff:{cash:+8000,pr:+12,marketing:+4,team:+3,learning:+10,health:-4}, set:{stage:3,raisedA:true}, res:'你顶住三天压力,最终 close 在 6.5 亿估值、7000 万融资。这是你创业以来最辛苦的一周。'}
+  ]
+});
+
+E({
+  id:'b_round', cat:'融资', tier:[6,16], gate:(s)=>s.stage>=3 && s.stage<=4 && (s.mrr>=80 || (s.product>=70 && s.market>=70)) && !s.flags.raisedB,
+  speaker:'B 轮领投合伙人', role:'机构会议',
+  text:'"我们看好你们,B 轮愿意领投。但条件是:一年内 ARR 必须翻倍,否则触发对赌。"',
+  choices:[
+    {ct:'签下对赌,All in 增长。',
+     hint:'拿钱,但绑住自己',
+     eff:{cash:+25000,marketing:+8,market:+6,team:+5,health:-6}, set:{stage:4,raisedB:true,bet:true}, res:'2.5 亿到账,但你心里清楚:接下来 12 个月你必须把销售、市场所有引擎全开。'},
+    {ct:'拒绝对赌,接受估值低一些的版本。',
+     hint:'稳健',
+     eff:{cash:+15000,pr:+5,team:+3,learning:+8}, set:{stage:4,raisedB:true}, res:'你 close 在 1.5 亿融资,没有对赌。投资人少了一些热情,但你赢了主动权。'}
+  ]
+});
+
+/* ---------- 退出事件 ---------- */
+E({
+  id:'acquisition_offer', cat:'退出', tier:[8,30], gate:(s)=>s.stage>=3 && (s.mrr>=50 || s.product>=70) && !s.flags.acquisitionConsidered,
+  speaker:'某巨头战投负责人', role:'电话',
+  text:'"我们公司想 10 亿全资收购你们。你和团队都留任 3 年。这是一个非常严肃的 offer。"',
+  choices:[
+    {ct:'接受收购。',
+     hint:'落袋为安',
+     eff:{cash:+0,pr:+10,health:+5}, set:{ending:'acquired'}, res:'你召开了董事会,经过两周的谈判,签字。你从今天起,是大厂的一名 SVP。'},
+    {ct:'拒绝,继续做独立公司。',
+     hint:'信念',
+     eff:{pr:+8,team:+5,learning:+6,health:-3}, set:{acquisitionConsidered:true}, res:'你拒绝了。投资人有支持有反对。你回到办公室,告诉团队:"我们还要继续。"'},
+    {ct:'用这个 offer 谈一轮更高估值的融资。',
+     hint:'狡猾的玩家',
+     eff:{cash:+12000,pr:+12,learning:+8,health:-4}, set:{acquisitionConsidered:true}, res:'你拿着这个 offer 去找投资人,新一轮 18 亿估值 close,稀释 8%。'}
+  ]
+});
+
+/* ---------- 方向专属事件 ---------- */
+// SaaS
+E({id:'saas_enterprise_deal', cat:'市场', tier:[3,10], dir:'saas',
+  speaker:'大客户 CIO', role:'电话会',
+  text:'"我们准备签 200 万年合同,但要求 SOC2 合规、SLA 99.99%、本地部署版本。"',
+  choices:[
+    {ct:'同时启动合规和私有化部署,All in 大客户路线。',
+     hint:'投入大,但护城河',
+     eff:{cash:-15,tech:+10,product:+8,market:+8,team:-2,learning:+5}, res:'9 个月后你们拿到了 SOC2,这一单签了 250 万,后续又来了 3 个类似客户。'},
+    {ct:'只做 SaaS 版本,放弃这单。',
+     hint:'坚持产品方向',
+     eff:{product:+5,learning:+3,team:+1}, res:'你专注 SaaS 版本,客单价没起来,但产品更纯粹。'}
+  ]
+});
+
+// 社交 App
+E({id:'social_viral', cat:'营销', tier:[2,8], dir:'social',
+  speaker:'增长负责人', role:'数据后台',
+  text:'"我们一个用户自发拍的内容今天突然爆了,200 万播放,新增 8 万下载。流量正在涌进来——服务器和留存策略要不要立刻升级?"',
+  choices:[
+    {ct:'扩服务器 + 引导关注,All in 这波流量。',
+     hint:'抓住爆发,烧钱',
+     eff:{cash:-15,tech:+5,market:+15,marketing:+10,team:-3,health:-5}, res:'下载量两周内冲到 100 万,你们登上了榜单 Top 10。'},
+    {ct:'谨慎扩容 + 完善留存机制,先把核心体验做好。',
+     hint:'稳一点',
+     eff:{cash:-6,product:+6,market:+6,learning:+5}, res:'这一波流量被你转化成了高留存用户。运营节奏没乱。'}
+  ]
+});
+
+// 电商
+E({id:'ecom_supplychain', cat:'危机', tier:[2,10], dir:'ecom',
+  speaker:'供应链负责人', role:'微信弹窗',
+  text:'"工厂出货延迟 6 周。我们刚做完一轮大促,几万订单要超时了。"',
+  choices:[
+    {ct:'公开发延迟说明 + 主动赔付优惠券。',
+     hint:'诚实,有成本',
+     eff:{cash:-25,pr:+8,market:+3,team:-2}, res:'你的诚实换来了大批好评,黑猫投诉极少。'},
+    {ct:'内部催进度,不主动通知用户。',
+     hint:'省事,埋雷',
+     eff:{cash:-3,pr:-12,marketing:-5,health:-4}, res:'一周后投诉量爆涨,平台开始限流你的店铺。'},
+    {ct:'切换备用工厂 + 加急,品质可能不稳。',
+     hint:'考验供应链能力',
+     eff:{cash:-12,product:-3,pr:+2,tech:+2,learning:+3}, res:'8 成订单按时到货,2 成出现品控问题。整体过关。'}
+  ]
+});
+
+// 硬件
+E({id:'hw_certification', cat:'技术', tier:[3,10], dir:'hardware',
+  speaker:'认证机构', role:'邮件',
+  text:'"你们的产品在 EMC 测试中出现波动,可能需要重新打样。这意味着量产延后 2-3 个月。"',
+  choices:[
+    {ct:'重新打样,稳扎稳打。',
+     hint:'晚但稳',
+     eff:{cash:-30,tech:+10,product:+8,learning:+5,team:-2,health:-3}, res:'量产延后两个月,但产品上市后零售退换率创业内新低。'},
+    {ct:'寻找替代方案,赶在原计划上市。',
+     hint:'风险大',
+     eff:{cash:-10,tech:+3,product:+3,pr:-4,health:-5}, res:'你们准时上市,但首批用户中出现了部分问题反馈,售后压力陡增。'}
+  ]
+});
+
+// AI
+E({id:'ai_model_race', cat:'技术', tier:[2,10], dir:'ai',
+  speaker:'技术合伙人', role:'凌晨 1 点会议',
+  text:'"刚刚发布的新模型把我们的核心能力做成了原生功能。我们怎么办?"',
+  choices:[
+    {ct:'立刻 pivot,做这家模型搞不定的垂直行业。',
+     hint:'船快调头',
+     eff:{product:+10,market:+8,tech:+5,team:-3,learning:+8,health:-4}, res:'三个月后你们成了某垂直行业的代表团队。投资人称赞:"反应够快。"'},
+    {ct:'继续拼速度,在这家公司没补齐的细节做到极致。',
+     hint:'技术信念',
+     eff:{tech:+6,product:+5,team:-2,learning:+5}, res:'你们做了大量精细打磨。两个月后用户留存反而提升,因为细节确实更好。'},
+    {ct:'公开发文回应,把"我们和大厂不同"讲出来。',
+     hint:'品牌定位',
+     eff:{pr:+10,marketing:+5,learning:+4}, res:'你的长文成了行业话题,品牌一夜立住。'}
+  ]
+});
+
+// 内容/游戏
+E({id:'content_hit', cat:'市场', tier:[2,9], dir:'content',
+  speaker:'运营负责人', role:'激动地',
+  text:'"我们的新作品出圈了,某平台主页推荐 + 主播直播带火,DAU 翻倍!要不要 all in 续作?"',
+  choices:[
+    {ct:'立刻立项续作,趁热打铁。',
+     hint:'风险:疲态作品',
+     eff:{cash:-15,product:+8,team:-3,market:+10,learning:+3,health:-4}, res:'续作半年后上线,卖出 50 万份,但口碑略逊。'},
+    {ct:'认真梳理这次成功原因 + 打磨下一作。',
+     hint:'慢但更稳',
+     eff:{product:+10,learning:+8,market:+4,team:+2}, res:'你们花一年时间做下一作,被誉为工作室代表作。'},
+    {ct:'同时启动续作 + 衍生周边,做 IP 化运营。',
+     hint:'最大化',
+     eff:{cash:-10,marketing:+8,market:+8,team:-4,learning:+3,health:-3}, res:'品牌延展开了,但团队过载,两个核心成员离职。'}
+  ]
+});
+
+// ---------- 通用补充事件 ----------
+E({id:'co_founder_fight', cat:'团队', tier:[3,12],
+  speaker:'老周', role:'激动地',
+  text:'"我跟阿杰彻底闹翻了。这个方向必须二选一,要么他走要么我走。"',
+  choices:[
+    {ct:'强势介入,坐下来开诚布公谈三方。',
+     hint:'CEO 的硬技能',
+     eff:{team:+5,learning:+7,health:-4}, res:'你主持了一场艰难的对话。两个人冷静下来,达成共识。'},
+    {ct:'选老周,让阿杰离开,补偿期权。',
+     hint:'痛但快刀',
+     eff:{cash:-10,team:-5,tech:-8,pr:-3,learning:+3}, res:'阿杰走了,技术团队震动了三个月,但你保住了管理同频。'},
+    {ct:'选阿杰,让老周转顾问。',
+     hint:'另一种切割',
+     eff:{team:-6,market:-5,pr:-4,learning:+4}, res:'老周淡出,公司缺少了一个商业化引擎,但团队气氛缓和了。'}
+  ]
+});
+
+E({id:'press_award', cat:'公关', tier:[3,12],
+  speaker:'媒体奖项主办方', role:'邮件',
+  text:'"恭喜!您入围了「年度最具潜力创业者」名单。颁奖典礼下周。"',
+  choices:[
+    {ct:'参加并准备一段真诚的获奖感言。',
+     hint:'公关爆发',
+     eff:{pr:+10,marketing:+4,team:+3,learning:+2,health:-2}, res:'你的感言被广泛转发,简历又雪片飞来。'},
+    {ct:'让 PR 同事代领,自己专心做产品。',
+     hint:'稳健',
+     eff:{pr:+4,product:+3,team:+2}, res:'你错过了一次曝光,但产品也确实进了一步。'},
+    {ct:'婉拒,所有荣誉与公司无关。',
+     hint:'低调',
+     eff:{pr:-2,learning:+2}, res:'你说"现在不需要这些"。圈子里有人欣赏,也有人觉得你太轴。'}
+  ]
+});
+
+E({id:'cash_running_out', cat:'危机', tier:[4,18],
+  speaker:'财务负责人', role:'紧急汇报',
+  text:'"按目前烧钱速度,公司账上的钱只够撑 3 个月了。要做点什么。"',
+  choices:[
+    {ct:'激进裁员 30%,所有非核心业务暂停。',
+     hint:'痛但活下去',
+     eff:{cash:+15,team:-12,product:-3,pr:-5,marketing:-3,health:-5,learning:+3}, res:'你亲自一个个谈了离职。公司活下来了,但接下来三个月,你们办公室异常安静。'},
+    {ct:'紧急启动桥贷融资。',
+     hint:'稀释代价',
+     eff:{cash:+40,pr:-3,learning:+4,health:-6}, set:{bridge:true}, res:'你拿到了一笔桥贷,估值是上一轮的 70%。投资人盯得更紧了。'},
+    {ct:'重大调整产品方向,降到最小可活模式。',
+     hint:'pivot',
+     eff:{cash:+8,product:-5,market:-5,team:-4,learning:+8}, res:'你砍掉了 60% 的功能,公司变成一个小而美的工具。客单价高了,但故事讲不大了。'}
+  ]
+});
+
+E({id:'community_growth', cat:'营销', tier:[1,6],
+  speaker:'你', role:'内部反思',
+  text:'"我们的用户其实非常爱我们,但都散落各处没有连接。要不要建一个社区?"',
+  choices:[
+    {ct:'招一个社区运营,全力做核心用户社群。',
+     hint:'长期复利',
+     eff:{cash:-3,marketing:+6,pr:+5,product:+3,learning:+3}, res:'三个月后你的核心用户开始自发推荐你,口碑获客占比超过 30%。'},
+    {ct:'自己每周参与 1 次用户聚会,亲自维护核心 100 人群。',
+     hint:'CEO 直管',
+     eff:{marketing:+5,pr:+6,product:+8,learning:+5,health:-3}, res:'核心用户感动得不行,几位主动成为你产品的"民间布道者"。'},
+    {ct:'不做,先做产品。',
+     hint:'机会成本',
+     eff:{marketing:-2,product:+2}, res:'你专注产品本身,错过一次低成本的品牌建设机会。'}
+  ]
+});
+
+E({id:'partner_offer', cat:'市场', tier:[2,10],
+  speaker:'某行业平台 BD', role:'微信',
+  text:'"我们想和你们做战略合作,你的功能嵌入我们的平台,我们分你 30% 收入。"',
+  choices:[
+    {ct:'接受合作,快速放大市场。',
+     hint:'借势,但依赖',
+     eff:{cash:+5,mrr:+6,market:+10,marketing:+5,product:-2,learning:+3}, res:'三个月后你们 40% 收入来自这个平台,但你心里清楚你的命脉一部分在别人手上。'},
+    {ct:'谈一个更深的资本绑定,他们入股。',
+     hint:'结盟',
+     eff:{cash:+200,market:+12,pr:+6,team:+3,learning:+6}, res:'他们投了 2000 万,签了战略合作。你的公司估值上去了,但失去了一些独立性。'},
+    {ct:'拒绝,坚持独立增长。',
+     hint:'独立性',
+     eff:{market:-3,learning:+3,team:+2}, res:'你回复"暂时不考虑"。短期增长慢了,但你保留了所有可能性。'}
+  ]
+});
+
+E({id:'family_event', cat:'生活', tier:[2,15],
+  speaker:'母亲', role:'一通电话',
+  text:'"儿子,你爸住院了,医生让赶紧回来。"',
+  choices:[
+    {ct:'立刻飞回家,公司停摆一周。',
+     hint:'家人优先',
+     eff:{health:+5,team:+3,product:-3,marketing:-3,learning:+3}, res:'你在医院陪了一周。父亲转危为安。你回到办公室那天哭了一场。'},
+    {ct:'安排家人请最好的医生,自己周末回家。',
+     hint:'分身乏术',
+     eff:{cash:-15,health:-3,learning:+1}, res:'父亲挺过来了。你心里清楚,这次你欠了家人一笔。'}
+  ]
+});
+
+E({id:'media_meltdown', cat:'危机', tier:[4,18],
+  speaker:'公关朋友', role:'紧急',
+  text:'"出大事了。一位前员工把内部聊天截图发到了网上,正在发酵。"',
+  choices:[
+    {ct:'24 小时内发公开信,承认问题 + 整改方案。',
+     hint:'真诚是最贵的公关',
+     eff:{pr:+8,team:+3,learning:+5,health:-6}, res:'你深夜写完公开信,48 小时内舆情明显缓和。员工反而更团结了。'},
+    {ct:'强硬走法律程序,起诉爆料人。',
+     hint:'激进,可能反噬',
+     eff:{cash:-5,pr:-10,team:-5,health:-4}, res:'诉讼引来更多关注,事情越闹越大。'},
+    {ct:'冷处理 + 内部整顿。',
+     hint:'看运气',
+     eff:{pr:-5,team:-2,learning:+2,health:-3}, res:'两周后事件淡出公众视线,但你失去了一些早期忠实用户的信任。'}
+  ]
+});
+
+E({id:'self_doubt', cat:'生活', tier:[3,18],
+  speaker:'你自己', role:'深夜的反思',
+  text:'"我已经一年没有真正开心过了。是不是我根本不适合做 CEO?"',
+  choices:[
+    {ct:'找心理咨询师,持续聊几周。',
+     hint:'稳定情绪',
+     eff:{cash:-2,health:+8,learning:+5}, res:'第四次咨询后你忽然在地铁上哭了一场,但你也确实轻松了下来。'},
+    {ct:'独自出去走一周,什么都不想。',
+     hint:'冒险型休息',
+     eff:{cash:-5,health:+12,learning:+6,product:-2,team:-1}, res:'你在山上呆了一周,回来时眼神不一样了。'},
+    {ct:'继续逼自己,撑过去就好。',
+     hint:'高风险',
+     eff:{health:-12,learning:-3,product:+2}, res:'你硬扛过去了,但这件事在你心里留下了一道暗伤。'}
+  ]
+});
+
+E({id:'mentor_advice', cat:'学习', tier:[1,12],
+  speaker:'你的 mentor', role:'喝茶',
+  text:'"我跟你说一句话,只一句:CEO 的时间不应该在做事上,而应该在做选择上。你最近这俩月做的最重要的选择是什么?"',
+  choices:[
+    {ct:'认真复盘,写下来,周期性回顾。',
+     hint:'复利型成长',
+     eff:{learning:+10,product:+3,team:+2,health:+2}, res:'你建立了周回顾机制,3 个月后你明显感到决策从冲动变得稳定。'},
+    {ct:'当场被点醒,但回去就忘了。',
+     hint:'真实',
+     eff:{learning:+2,health:-1}, res:'你回去之后被一堆事情淹没,直到三个月后再想起这句话。'}
+  ]
+});
+
+E({id:'hire_coo', cat:'团队', tier:[4,14],
+  speaker:'某大厂前高管', role:'第三次咖啡',
+  text:'"我可以加入做 COO,但我有一个条件:从今天起,公司日常运营全权交给我,你专注产品和融资。"',
+  choices:[
+    {ct:'接受,从今天起放手。',
+     hint:'考验放权能力',
+     eff:{cash:-20,team:+8,market:+5,product:+5,learning:+5,health:+5}, res:'你强迫自己退出日常运营。一个月后你睡眠多了,公司也没乱。'},
+    {ct:'接受,但保留对核心决策的最终批准。',
+     hint:'稳健',
+     eff:{cash:-15,team:+5,market:+3,learning:+3}, res:'他来了,但有些事情还是要请示你。半年后他离开了。'},
+    {ct:'婉拒,继续亲力亲为。',
+     hint:'独狼',
+     eff:{team:-3,health:-4,learning:-2}, res:'你婉拒了。你继续在所有事情上消耗自己。'}
+  ]
+});
+
+E({id:'employee_betray', cat:'危机', tier:[5,18],
+  speaker:'HR', role:'神秘地',
+  text:'"我们发现有员工把核心客户名单泄露给了竞争对手……"',
+  choices:[
+    {ct:'立刻立案 + 走法律,杀鸡儆猴。',
+     hint:'代价高但震慑',
+     eff:{cash:-8,team:-3,pr:-3,learning:+4}, res:'你走了法律程序,内部一片肃然。两个员工默默地离职了。'},
+    {ct:'谈判 + 签协议解决,不张扬。',
+     hint:'低调',
+     eff:{cash:-3,team:-1,learning:+3}, res:'你处理得低调而果断,内部知道这件事的人不多,但都更敬畏你。'},
+    {ct:'内部公开,以此整顿信息安全。',
+     hint:'借机重塑文化',
+     eff:{team:+3,tech:+4,learning:+5}, res:'你把这件事透明化,反而成了一次价值观重塑的契机。'}
+  ]
+});
+
+E({id:'student_speech', cat:'公关', tier:[2,15],
+  speaker:'某高校创业社团', role:'邀请函',
+  text:'"我们邀请您给学弟学妹们做一场分享,不收报酬。"',
+  choices:[
+    {ct:'欣然前往,讲真实的故事。',
+     hint:'低调高回报',
+     eff:{pr:+5,learning:+3,team:+1,health:-1}, res:'回来路上你忽然觉得脚步轻了一些。两位学弟成了你们的实习生。'},
+    {ct:'婉拒,现在没时间。',
+     hint:'机会成本',
+     eff:{pr:-1}, res:'对方很客气地说"理解"。'}
+  ]
+});
+
+/* ========================================================= */
+
+// ---------- 性格维度元数据 ----------
+// 5 个轴,每个轴 -X(左) ~ +X(右),累计后归一到 0-100,50 为中性
+const TRAIT_AXES = [
+  {k:'risk',     left:'保守稳健', right:'激进押注', desc:'你愿意在多大不确定性下下注'},
+  {k:'control',  left:'分权信任', right:'紧握权柄', desc:'你倾向集中决策还是放手让人'},
+  {k:'longterm', left:'短期套现', right:'长期主义', desc:'你看时间的长度是季度还是十年'},
+  {k:'empathy',  left:'工具理性', right:'人本关怀', desc:'你把人当作资源还是同行者'},
+  {k:'openness', left:'封闭执行', right:'反思学习', desc:'你愿不愿意被自己改变'}
+];
+
+// ---------- 选择→性格维度映射表 ----------
+// 每个 eventId 对应一个数组,数组下标对应 choices 下标
+// 每个值是一个 partial {risk,control,longterm,empathy,openness} ,数值范围 -5~+5
+// 缺省 = 中性(不计分)
+const ACTION_TRAITS = {
+  cofounder_equity: [
+    {control:+5, empathy:-3, risk:+1},
+    {control:+1, longterm:+3, empathy:+2},
+    {control:-5, empathy:+4, longterm:-3}
+  ],
+  first_customer: [
+    {risk:+2, longterm:-3, empathy:+1},
+    {longterm:+3, empathy:+2, openness:+1},
+    {risk:+3, longterm:+4, control:+2, empathy:-1}
+  ],
+  star_engineer: [
+    {risk:+3, longterm:+2, openness:+1},
+    {risk:+2, control:+1, openness:+2, empathy:+1},
+    {risk:-3, control:+2, empathy:+3, openness:-1}
+  ],
+  angel_coffee: [
+    {risk:-1, openness:+1, empathy:+1},
+    {risk:+2, control:+2, openness:+2},
+    {risk:+3, control:+4, longterm:+2, empathy:-1}
+  ],
+  product_bug: [
+    {empathy:+4, longterm:+3, openness:+2},
+    {risk:+1, empathy:-1, openness:-1},
+    {risk:+3, empathy:-4, longterm:-4, openness:-3}
+  ],
+  late_night_relationship: [
+    {empathy:+5, longterm:+3, openness:+2},
+    {empathy:-2, openness:-2},
+    {empathy:+2, openness:+3}
+  ],
+  key_employee_quit: [
+    {empathy:+3, risk:+1, longterm:+1},
+    {empathy:+3, openness:+3, risk:+1},
+    {empathy:-1, longterm:+2, openness:+2}
+  ],
+  media_pitch: [
+    {risk:+3, longterm:-3, empathy:-2},
+    {longterm:+3, openness:+2, risk:-1},
+    {risk:-2, control:+2, openness:+1, longterm:+1}
+  ],
+  pivot_question: [
+    {risk:+3, openness:+5, longterm:+1},
+    {risk:-1, openness:+1, longterm:+1},
+    {risk:+1, openness:-4, control:+2}
+  ],
+  regulator_call: [
+    {longterm:+4, openness:+3, risk:-2, empathy:+1},
+    {risk:+4, longterm:-3, openness:-2},
+    {risk:-1, openness:+1, longterm:+1}
+  ],
+  health_warning: [
+    {empathy:+3, openness:+3, longterm:+4},
+    {empathy:-2, openness:-3, risk:+1, longterm:-2},
+    {empathy:+3, openness:+4, control:-3, longterm:+2}
+  ],
+  pricing_change: [
+    {risk:+2, control:+1},
+    {risk:-1, openness:+2, longterm:+2},
+    {risk:-2, openness:-1}
+  ],
+  pr_attack: [
+    {longterm:+3, empathy:+2, openness:+3, risk:+1},
+    {risk:+3, empathy:-3, control:+2},
+    {risk:-1, openness:-1, control:-1}
+  ],
+  big_client_demand: [
+    {risk:+2, longterm:-3, empathy:+1},
+    {longterm:+1, openness:+2, empathy:+1},
+    {risk:+2, longterm:+3, control:+2}
+  ],
+  open_source_call: [
+    {longterm:+3, openness:+3, risk:+1},
+    {longterm:+4, openness:+4, risk:+4, control:-2},
+    {control:+3, risk:-2, longterm:-1, openness:-1}
+  ],
+  compete_war: [
+    {longterm:+4, openness:+3, risk:+1},
+    {risk:+4, longterm:-4, openness:-2},
+    {longterm:+3, openness:+2, risk:+1}
+  ],
+  speaker_invite: [
+    {risk:+1, longterm:+2, openness:+1},
+    {control:-3, openness:+2, empathy:+2},
+    {risk:-2, control:+1, openness:-1}
+  ],
+  invest_self: [
+    {longterm:+4, openness:+5, risk:+1},
+    {longterm:+3, openness:+4},
+    {longterm:-3, openness:-4}
+  ],
+  investor_pressure: [
+    {risk:+4, control:+2, empathy:-2, longterm:-2},
+    {openness:+3, empathy:+1, longterm:+1, risk:-1},
+    {openness:+3, longterm:+2, risk:-1, empathy:-1}
+  ],
+  team_burnout: [
+    {empathy:+4, longterm:+3, openness:+2},
+    {risk:+1, empathy:+1, longterm:-1},
+    {empathy:-3, openness:-2}
+  ],
+  angel_round: [
+    {risk:-1, openness:+1},
+    {risk:+2, control:+2, openness:+1}
+  ],
+  a_round: [
+    {risk:-1, openness:+1, empathy:+1},
+    {risk:+3, control:+2, openness:+1}
+  ],
+  b_round: [
+    {risk:+4, longterm:-2, openness:-1},
+    {risk:-2, control:+2, longterm:+3, openness:+2}
+  ],
+  acquisition_offer: [
+    {risk:-3, longterm:-2, openness:+1, empathy:+2},
+    {risk:+3, control:+4, longterm:+4, openness:+1},
+    {risk:+3, control:+2, openness:+3, empathy:-1}
+  ],
+  saas_enterprise_deal: [
+    {risk:+2, longterm:+3, openness:+1},
+    {risk:+1, longterm:+2, openness:+1, control:+2}
+  ],
+  social_viral: [
+    {risk:+4, longterm:-1, control:+1},
+    {risk:-1, longterm:+3, openness:+2}
+  ],
+  ecom_supplychain: [
+    {empathy:+4, longterm:+3, openness:+2},
+    {risk:+2, empathy:-4, longterm:-3, openness:-2},
+    {risk:+2, openness:+1, longterm:+1}
+  ],
+  hw_certification: [
+    {risk:-2, longterm:+4, openness:+2},
+    {risk:+3, longterm:-2, openness:-1}
+  ],
+  ai_model_race: [
+    {risk:+3, openness:+4, longterm:+1},
+    {risk:-1, openness:+1, longterm:+2},
+    {risk:+1, longterm:+2, openness:+2}
+  ],
+  content_hit: [
+    {risk:+3, longterm:-2, openness:-1},
+    {risk:-1, longterm:+4, openness:+3},
+    {risk:+3, control:+1, longterm:+1}
+  ],
+  co_founder_fight: [
+    {empathy:+4, openness:+4, risk:+1},
+    {control:+3, empathy:-2, risk:+2},
+    {control:+3, empathy:-2, risk:+2}
+  ],
+  press_award: [
+    {risk:+1, openness:+1},
+    {control:-2, empathy:+1, openness:+1},
+    {risk:-2, control:+1, longterm:+1}
+  ],
+  cash_running_out: [
+    {risk:+2, empathy:-4, control:+3},
+    {risk:+1, longterm:-2, openness:+1},
+    {openness:+4, risk:+1, longterm:+2}
+  ],
+  community_growth: [
+    {longterm:+3, empathy:+3, openness:+2},
+    {longterm:+3, empathy:+4, openness:+3, control:-1},
+    {longterm:-2, empathy:-1}
+  ],
+  partner_offer: [
+    {risk:+1, longterm:-1, openness:+1},
+    {risk:+2, control:-2, longterm:+1},
+    {control:+3, risk:-1, longterm:+2}
+  ],
+  family_event: [
+    {empathy:+5, longterm:+2, control:-2},
+    {empathy:-1, control:+2}
+  ],
+  media_meltdown: [
+    {empathy:+4, openness:+4, longterm:+3},
+    {risk:+3, empathy:-3, control:+2},
+    {empathy:-1, openness:-2, risk:-1}
+  ],
+  self_doubt: [
+    {empathy:+4, openness:+5, longterm:+2},
+    {empathy:+2, openness:+3, risk:+1},
+    {empathy:-4, openness:-4, control:+2}
+  ],
+  mentor_advice: [
+    {openness:+5, longterm:+4},
+    {openness:-2, longterm:-1}
+  ],
+  hire_coo: [
+    {control:-5, openness:+4, empathy:+3},
+    {control:-1, openness:+1},
+    {control:+5, openness:-2, empathy:-3}
+  ],
+  employee_betray: [
+    {risk:+1, empathy:-2, control:+3},
+    {risk:-1, openness:+1, control:+1},
+    {openness:+4, empathy:+2, longterm:+3}
+  ],
+  student_speech: [
+    {empathy:+3, openness:+2, longterm:+1},
+    {empathy:-1, longterm:-1}
+  ]
+};
+
+const state = {
+  founder:'',
+  company:'',
+  direction:null,
+  month:1,
+  stage:0,
+  cash:0,
+  mrr:0,
+  product:0, tech:0, market:0, marketing:0, pr:0, team:0,
+  health:0, learning:0,
+  traits:{risk:0, control:0, longterm:0, empathy:0, openness:0},
+  traitCounts:0,   // 已记录的有效选择次数,用于归一
+  flags:{},
+  history:[],
+  ending:null,
+  endingType:null
+};
+
+function clamp(v){return Math.max(0,Math.min(100,v))}
+function fmtMoney(v){
+  if(Math.abs(v)>=10000) return (v/10000).toFixed(2)+'亿';
+  return v.toFixed(0)+'万';
+}
+
+// ---------- 流程控制 ----------
+function goSetup(){
+  document.getElementById('screen-start').classList.add('hide');
+  document.getElementById('screen-setup').classList.remove('hide');
+  renderDirections();
+}
+
+function renderDirections(){
+  const wrap=document.getElementById('dirList');
+  wrap.innerHTML='';
+  DIRECTIONS.forEach(d=>{
+    const el=document.createElement('div');
+    el.className='dir';
+    el.onclick=()=>{
+      state.direction=d;
+      [...wrap.children].forEach(c=>c.classList.remove('selected'));
+      el.classList.add('selected');
+      validateSetup();
+    };
+    el.innerHTML=`
+      <h4>${d.name}</h4>
+      <span class="tag">${d.tag}</span>
+      <p>${d.desc}</p>
+      <div class="stats">
+        <span>启动资金 ${d.start.cash} 万</span>
+        <span>烧钱系数 ${d.burnMul.toFixed(1)}</span>
+      </div>
+    `;
+    wrap.appendChild(el);
+  });
+  ['founderName','companyName'].forEach(id=>{
+    document.getElementById(id).oninput=validateSetup;
+  });
+}
+
+function validateSetup(){
+  const ok = state.direction
+    && document.getElementById('founderName').value.trim()
+    && document.getElementById('companyName').value.trim();
+  document.getElementById('goBtn').disabled = !ok;
+}
+
+function startGame(){
+  state.founder = document.getElementById('founderName').value.trim();
+  state.company = document.getElementById('companyName').value.trim();
+  const s=state.direction.start;
+  Object.assign(state,{
+    month:1, stage:0,
+    cash:s.cash, mrr:s.mrr,
+    product:s.product, tech:s.tech, market:s.market,
+    marketing:s.marketing, pr:s.pr, team:s.team,
+    health:s.health, learning:s.learning,
+    traits:{risk:0, control:0, longterm:0, empathy:0, openness:0},
+    traitCounts:0,
+    flags:{}, history:[], ending:null, endingType:null
+  });
+  document.getElementById('screen-setup').classList.add('hide');
+  document.getElementById('screen-game').classList.remove('hide');
+  document.getElementById('restartBtn').classList.remove('hide');
+  document.getElementById('restartBtn').onclick=()=>{ if(confirm('确定要放弃当前创业,重新开始吗?')) location.reload() };
+  renderStats();
+  nextTurn();
+}
+
+// ---------- 渲染数值面板 ----------
+function renderStats(){
+  const stage=STAGES[state.stage];
+  const burn = computeBurn();
+  const runway = burn<=0 ? '∞' : Math.max(0, Math.floor((state.cash + state.mrr*6) / burn));
+  const html = `
+    <div class="meta">
+      <div class="name">${state.founder} <span class="badge">${stage}</span></div>
+      <div class="biz">${state.company} · ${state.direction.name}</div>
+      <div class="month">第 ${state.month} 个月 · 烧钱 ${burn.toFixed(1)} 万/月 · 跑道约 ${runway} 月</div>
+    </div>
+    <div class="money">
+      <div><div class="l">账上现金</div><div class="v">${fmtMoney(state.cash)}</div></div>
+      <div><div class="l">月收入 MRR</div><div class="v">${state.mrr.toFixed(1)} 万</div></div>
+    </div>
+    <h4>能力数值</h4>
+    ${FIELDS.map(f=>{
+      const v=state[f.k];
+      const cls = f.k==='health'? (v<35?'bad':'good')
+                : f.k==='learning'?'info'
+                : '';
+      return `<div class="stat">
+        <div class="lbl"><span>${f.name}</span><span>${v.toFixed(0)}</span></div>
+        <div class="bar ${cls}"><i style="width:${v}%"></i></div>
+      </div>`;
+    }).join('')}
+    <div class="stage-panel">
+      <h4>融资阶段</h4>
+      <div class="stage-row">
+        ${STAGES.map((s,i)=>`<div class="stage-chip ${i===state.stage?'active':(i<state.stage?'done':'')}">${s}</div>`).join('')}
+      </div>
+    </div>
+  `;
+  document.getElementById('statsPanel').innerHTML=html;
+}
+
+// ---------- 烧钱计算 ----------
+function computeBurn(){
+  const base = 6 + state.team*0.55;
+  return base * state.direction.burnMul;
+}
+
+// ---------- 月度结算 ----------
+function monthlyTick(){
+  const burn = computeBurn();
+  state.cash -= burn;
+  state.cash += state.mrr;
+  // 收入自然增长 / 衰减
+  if(state.product>50 && state.market>40){
+    state.mrr += (state.product+state.market-90)/40;
+    if(state.mrr<0) state.mrr=0;
+  }
+  // 健康长期消耗
+  state.health = clamp(state.health - 0.4);
+  // 数值轻度衰减(信息没用就会忘)
+  state.learning = clamp(state.learning - 0.2);
+  state.month++;
+}
+
+// ---------- 事件挑选 ----------
+function pickEvent(){
+  const candidates = EVENTS.filter(e=>{
+    if(e.dir && e.dir !== state.direction.id) return false;
+    if(e.tier && (state.month < e.tier[0] || state.month > e.tier[1])) return false;
+    if(e.gate && !e.gate(state)) return false;
+    if(state.history.find(h=>h.id===e.id) && !e.repeat) return false;
+    return true;
+  });
+  // 优先 gated 事件(融资/退出)
+  const gated = candidates.filter(e=>e.gate);
+  const pool = gated.length ? gated : candidates;
+  if(pool.length===0) return null;
+  return pool[Math.floor(Math.random()*pool.length)];
+}
+
+// ---------- 推进一回合 ----------
+function nextTurn(){
+  // 结束判定优先
+  const end = checkEnding();
+  if(end){ renderEnding(end); return; }
+  const ev = pickEvent();
+  if(!ev){
+    // 没事件就空白推进
+    monthlyTick();
+    renderStats();
+    const end2 = checkEnding();
+    if(end2){ renderEnding(end2); return; }
+    setTimeout(nextTurn,200);
+    return;
+  }
+  renderScene(ev);
+}
+
+// ---------- 渲染事件 ----------
+function renderScene(ev){
+  const scene = document.getElementById('scene');
+  scene.innerHTML = `
+    <div class="turn-head">
+      <div class="title">第 ${state.month} 个月 · ${state.company}</div>
+      <div class="cat">${ev.cat}</div>
+    </div>
+    <div class="speaker">
+      <div class="avatar">${ev.speaker.slice(0,1)}</div>
+      <div>
+        <div class="who">${ev.speaker}</div>
+        <div class="role">${ev.role||''}</div>
+      </div>
+    </div>
+    <div class="dialogue">${ev.text}</div>
+    <div class="choices">
+      ${ev.choices.map((c,i)=>`<button class="choice" data-i="${i}">
+        <span class="ct">${c.ct}</span>
+        ${c.hint?`<span class="hint">${c.hint}</span>`:''}
+      </button>`).join('')}
+    </div>
+  `;
+  scene.querySelectorAll('.choice').forEach(btn=>{
+    btn.onclick=()=>resolveChoice(ev,parseInt(btn.dataset.i));
+  });
+  window.scrollTo({top:0,behavior:'smooth'});
+}
+
+// ---------- 处理选择 ----------
+function resolveChoice(ev, idx){
+  const c = ev.choices[idx];
+  const applied = {};
+  if(c.eff){
+    for(const k in c.eff){
+      const dv = c.eff[k];
+      if(k==='cash' || k==='mrr'){
+        state[k] += dv;
+        if(state[k]<0 && k==='mrr') state[k]=0;
+      }else{
+        state[k] = clamp(state[k] + dv);
+      }
+      applied[k]=dv;
+    }
+  }
+  if(c.set){
+    for(const k in c.set){
+      if(k==='stage') state.stage = c.set[k];
+      else state.flags[k] = c.set[k];
+    }
+  }
+  // 累计性格分
+  const tmap = ACTION_TRAITS[ev.id] && ACTION_TRAITS[ev.id][idx];
+  if(tmap){
+    for(const k in tmap){
+      if(state.traits[k]!==undefined) state.traits[k] += tmap[k];
+    }
+    state.traitCounts += 1;
+  }
+  state.history.push({id:ev.id, month:state.month, cat:ev.cat, choice:c.ct, result:c.res||'', delta:applied, trait:tmap||null});
+  monthlyTick();
+  renderStats();
+  showResult(ev,c,applied);
+}
+
+// ---------- 性格归一化 ----------
+// 把累计原始分 → 0-100 (50 = 中性, >50 = 右轴, <50 = 左轴)
+function normalizedTraits(){
+  const n = Math.max(8, state.traitCounts);   // 至少按 8 次选择折算,避免早期数值过敏
+  const out = {};
+  for(const axis of TRAIT_AXES){
+    const raw = state.traits[axis.k];
+    // 每次选择最多贡献 ±5,n 次最大 ±5n;归一映射到 50±50
+    const scaled = (raw / (n * 4)) * 50;     // 用 4 而非 5,让满分更容易达到
+    out[axis.k] = clamp(50 + scaled);
+  }
+  return out;
+}
+
+// ---------- 结果反馈 ----------
+function showResult(ev,c,applied){
+  const scene = document.getElementById('scene');
+  const sumDelta = Object.values(applied).reduce((a,b)=>a+b,0);
+  const cls = sumDelta>0?'':sumDelta<0?'bad':'info';
+  const deltaTags = Object.entries(applied).map(([k,v])=>{
+    const lbl = k==='cash'?'现金': k==='mrr'?'MRR': (FIELDS.find(f=>f.k===k)?.name||k);
+    const sign = v>0?'+':'';
+    return `<span class="delta ${v>0?'pos':v<0?'neg':''}">${lbl} ${sign}${k==='cash'||k==='mrr'?v.toFixed(0):v}</span>`;
+  }).join('');
+  scene.querySelector('.choices').remove();
+  const block = document.createElement('div');
+  block.innerHTML = `
+    <div class="result ${cls}">
+      ${c.res||'你做出了决定。'}
+      ${deltaTags?`<div class="deltas">${deltaTags}</div>`:''}
+    </div>
+    <button class="next-btn" onclick="nextTurn()">继续 → 第 ${state.month} 个月</button>
+  `;
+  scene.appendChild(block);
+}
+
+// ---------- 结局判定 ----------
+function checkEnding(){
+  if(state.flags.ending==='acquired'){
+    return {type:'mid',title:'公司被收购',desc:`你最终接受了收购,留任了 3 年。${state.company} 成为大厂的一个事业部,你也实现了财务自由。`};
+  }
+  if(state.cash <= 0){
+    return {type:'bad',title:'资金链断裂',desc:`第 ${state.month} 个月,${state.company} 的账上再也无法支付工资。你站在空荡荡的办公室里,签下了清算文件。`};
+  }
+  if(state.health <= 0){
+    return {type:'bad',title:'健康崩塌',desc:`第 ${state.month} 个月,你倒在了办公室里。医生告诉你必须立刻停止工作。公司被董事会接管。`};
+  }
+  if(state.team <= 5){
+    return {type:'bad',title:'团队解散',desc:`第 ${state.month} 个月,核心团队几乎走完了。你一个人坐在办公室,看着那些空椅子,做出了关掉公司的决定。`};
+  }
+  // 退出胜利:IPO/独角兽
+  if(state.stage>=4 && state.mrr>=200 && state.product>=80 && state.market>=70){
+    return {type:'good',title:'公司成功上市',desc:`第 ${state.month} 个月,${state.company} 在交易所敲响了那口钟。你的故事被写进了行业里。`};
+  }
+  if(state.stage>=4 && state.cash>=20000 && state.mrr>=150){
+    return {type:'good',title:'独角兽达成',desc:`${state.company} 估值突破 10 亿美元,你成了行业里的代表人物之一。`};
+  }
+  // 月数上限,普通结局
+  if(state.month>=42){
+    if(state.mrr>=80 && state.product>=65){
+      return {type:'mid',title:'稳健盈利,持续经营',desc:`${state.month} 个月后,${state.company} 已经是一家有正向现金流、稳定增长的公司。你没有上市,但你掌握了自己的人生。`};
+    }
+    if(state.mrr<20 && state.product<40){
+      return {type:'bad',title:'缓慢消逝',desc:`${state.month} 个月过去,${state.company} 没有死,也没有活,你最终选择了关掉公司,回归普通生活。`};
+    }
+    return {type:'mid',title:'继续经营',desc:`${state.month} 个月后,${state.company} 处在一个不温不火的状态。你决定先暂停模拟,休整一段。`};
+  }
+  return null;
+}
+
+// ---------- 渲染结局报告 ----------
+function renderEnding(end){
+  state.ending = end;
+  document.getElementById('screen-game').classList.add('hide');
+  document.getElementById('screen-report').classList.remove('hide');
+
+  const traits = normalizedTraits();
+  const arch = pickArchetype(traits);
+  const advice = buildAdvice(traits, arch);
+  const radar = makeRadar();
+  const traitBars = makeTraitBars(traits);
+  const score = computeScore(end);
+  const grade = gradeFrom(score, end);
+  const lessons = buildLessons();
+
+  const endType = end.type==='good'?'成功结局':end.type==='bad'?'失败结局':'中性结局';
+  const endClass = end.type==='good'?'end-good':end.type==='bad'?'end-bad':'end-mid';
+
+  const html = `
+    <div class="ending-kicker">
+      <span class="kicker">Final Reading · 创业人格报告</span>
+    </div>
+    <h3>${end.title}</h3>
+    <div class="center" style="margin-bottom:14px">
+      <span class="ending-type ${endClass}">${endType}</span>
+    </div>
+    <div class="end-desc">${end.desc}</div>
+
+    <div class="divider-line">§ &nbsp; &nbsp; § &nbsp; &nbsp; §</div>
+
+    <!-- 原型卡 -->
+    <div class="archetype">
+      <div class="latin">${arch.latin}</div>
+      <div class="zh">${arch.zh}</div>
+      <div class="one-liner">${arch.oneliner}</div>
+    </div>
+
+    <!-- 性格 5 维 -->
+    <div class="trait-section">
+      <h4>五维性格画像 · Founder Profile</h4>
+      <div class="trait-grid">
+        <div class="trait-bars">${traitBars}</div>
+        <div>
+          <div style="font-size:13px;color:var(--ink-soft);line-height:1.9">
+            <p style="margin:0 0 12px;font-style:italic">这五维是创业语境下最难掩饰的人格切片。<br/>你的位置不是判分,而是一种描述——它说明在过去 ${state.traitCounts} 个真实选择里,你倾向把自己摆在哪一侧。</p>
+            <p style="margin:0 0 0;font-style:italic;color:var(--accent)">"你做的每一个决定,都在悄悄告诉别人你是谁。"</p>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- 你的强项 vs 风险 -->
+    <div class="report-grid">
+      <div class="panel">
+        <h4>你的强项</h4>
+        <ul class="lessons" style="margin:0">
+          ${arch.strengths.map(s=>`<li>${s}</li>`).join('')}
+        </ul>
+      </div>
+      <div class="panel">
+        <h4>你要警惕的盲区</h4>
+        <ul class="lessons" style="margin:0">
+          ${arch.risks.map(s=>`<li>${s}</li>`).join('')}
+        </ul>
+      </div>
+    </div>
+
+    <!-- 方向性建议 -->
+    <div class="advice-section">
+      <h4>给你的方向性建议</h4>
+      <div class="sub">基于你这次创业里 ${state.traitCounts} 个真实决策,而不是性格测试问卷。</div>
+      <ol class="advice-list">
+        ${advice.map(a=>`<li><b>${a.title}</b><span>${a.body}</span></li>`).join('')}
+      </ol>
+    </div>
+
+    <div class="divider-line">§ &nbsp; &nbsp; § &nbsp; &nbsp; §</div>
+
+    <!-- 综合数据 -->
+    <div class="report-grid">
+      <div class="panel">
+        <h4>综合评分</h4>
+        <div class="score-big">${score}</div>
+        <div class="title-big">${grade.title}</div>
+        <div class="desc">${grade.desc}</div>
+      </div>
+      <div class="panel">
+        <h4>关键数据</h4>
+        <div class="kv"><span>创始人</span><span>${state.founder}</span></div>
+        <div class="kv"><span>公司</span><span>${state.company}</span></div>
+        <div class="kv"><span>赛道</span><span>${state.direction.name}</span></div>
+        <div class="kv"><span>经营时长</span><span>${state.month} 个月</span></div>
+        <div class="kv"><span>融资阶段</span><span>${STAGES[state.stage]}</span></div>
+        <div class="kv"><span>最终现金</span><span>${fmtMoney(state.cash)}</span></div>
+        <div class="kv"><span>最终 MRR</span><span>${state.mrr.toFixed(1)} 万/月</span></div>
+        <div class="kv"><span>个人健康</span><span>${state.health.toFixed(0)} / 100</span></div>
+      </div>
+      <div class="panel">
+        <h4>八维能力雷达</h4>
+        ${radar}
+      </div>
+      <div class="panel">
+        <h4>关键决策回顾</h4>
+        <div class="timeline">
+          ${state.history.slice(-12).reverse().map(h=>`
+            <div class="item"><span class="m">M${h.month} · ${h.cat}</span><b>${h.choice}</b><span class="r">${h.result}</span></div>
+          `).join('')}
+        </div>
+      </div>
+    </div>
+
+    <div class="advice-section" style="border-left-color:var(--accent-2)">
+      <h4>这一局,你也学到了</h4>
+      <ul class="lessons">${lessons.map(l=>`<li>${l}</li>`).join('')}</ul>
+    </div>
+
+    <div class="center" style="margin-top:36px">
+      <button class="primary" onclick="location.reload()">换一条路再读一遍自己</button>
+    </div>
+  `;
+  document.getElementById('screen-report').innerHTML = html;
+  window.scrollTo({top:0,behavior:'smooth'});
+}
+
+// ---------- 性格 5 维条形图 ----------
+function makeTraitBars(t){
+  return TRAIT_AXES.map(axis=>{
+    const v = t[axis.k];     // 0-100
+    let interp = '';
+    if(v>=70) interp = `明显偏「${axis.right}」`;
+    else if(v>=58) interp = `略偏「${axis.right}」`;
+    else if(v>42) interp = '居中,两极之间';
+    else if(v>30) interp = `略偏「${axis.left}」`;
+    else interp = `明显偏「${axis.left}」`;
+    return `
+      <div class="trait-bar">
+        <div class="head">
+          <span class="axis-end">${axis.left}</span>
+          <span>${axis.k}</span>
+          <span class="axis-end">${axis.right}</span>
+        </div>
+        <div class="track">
+          <span class="center-mark"></span>
+          <span class="dot" style="left:${v}%"></span>
+        </div>
+        <div class="interp">${interp} · ${axis.desc}</div>
+      </div>
+    `;
+  }).join('');
+}
+
+// ---------- 雷达图 ----------
+function makeRadar(){
+  const dims = [
+    {k:'product',name:'产品'},
+    {k:'tech',name:'技术'},
+    {k:'market',name:'市场'},
+    {k:'marketing',name:'营销'},
+    {k:'pr',name:'品牌'},
+    {k:'team',name:'团队'},
+    {k:'health',name:'健康'},
+    {k:'learning',name:'认知'}
+  ];
+  const cx=170,cy=170,r=130, n=dims.length;
+  const pt=(v,i)=>{
+    const a = -Math.PI/2 + i*(2*Math.PI/n);
+    const rad = r*(v/100);
+    return [cx+rad*Math.cos(a), cy+rad*Math.sin(a)];
+  };
+  const axis = dims.map((d,i)=>{
+    const [x,y] = pt(118, i);
+    return `<line x1="${cx}" y1="${cy}" x2="${cx+r*Math.cos(-Math.PI/2+i*(2*Math.PI/n))}" y2="${cy+r*Math.sin(-Math.PI/2+i*(2*Math.PI/n))}" stroke="#D9CFBE"/>
+    <text x="${x}" y="${y}" fill="#5C5448" font-size="11" font-family="Source Serif Pro, Noto Serif SC, serif" font-style="italic" text-anchor="middle" dominant-baseline="middle">${d.name}</text>`;
+  }).join('');
+  const grid = [25,50,75,100].map(lv=>{
+    const path = dims.map((d,i)=>{
+      const [x,y]=pt(lv,i);
+      return `${x},${y}`;
+    }).join(' ');
+    return `<polygon points="${path}" fill="none" stroke="#E8DECA"/>`;
+  }).join('');
+  const poly = dims.map((d,i)=>{
+    const [x,y]=pt(state[d.k],i);
+    return `${x},${y}`;
+  }).join(' ');
+  return `<svg viewBox="0 0 340 340" width="100%" height="320">
+    ${grid}
+    ${axis}
+    <polygon points="${poly}" fill="rgba(63,90,69,.16)" stroke="#3F5A45" stroke-width="1.5"/>
+  </svg>`;
+}
+
+// ---------- 创业者人格原型 ----------
+// 每个原型用 5 维理想画像 + 权重描述,匹配距离最近的一个
+const ARCHETYPES = [
+  {
+    id:'pragmatic-partner',
+    latin:'The Pragmatic Partner',
+    zh:'务实合伙型',
+    target:{risk:55, control:35, longterm:65, empathy:70, openness:60},
+    oneliner:'你不在乎是不是英雄,你在乎大家能不能一起把事做成。你的护城河是「人愿意跟着你」。',
+    strengths:['对人有耐心,擅长把不同性格的人粘起来','能在风险与稳健之间找折中,避免冲动','信任别人,愿意分权'],
+    risks:['过度折中,可能错失需要孤注一掷的窗口','过度信任,被合伙人/员工辜负的概率更高','决策可能慢半拍'],
+    fits:['SaaS / 企业服务 / 工具产品','需要长期客户关系的赛道','合伙创业,不是单打独斗'],
+    avoid:['极度短窗口的赌博型项目','需要 CEO 站在风口浪尖、强人设的赛道','一切「3 个月烧出独角兽」的故事']
+  },
+  {
+    id:'lone-bet',
+    latin:'The Lone Bet',
+    zh:'激进孤狼型',
+    target:{risk:85, control:80, longterm:35, empathy:30, openness:55},
+    oneliner:'你是天生的押注者。你相信窗口比共识更重要,你信自己胜过信团队。这既是你的发动机,也是你的引信。',
+    strengths:['看到机会会立刻 all in,反应极快','心理承压能力强,愿意为决策负责到底','在混乱、对抗、危机里反而清醒'],
+    risks:['团队跟不上,核心成员会因你独断而陆续离开','长期主义维度低,容易做出短期最优、长期负债的决定','燃尽自己:健康和关系是你最容易忽略的两项'],
+    fits:['爆款型消费 App / 社交 / 流量产品','短窗口、强对抗的赛道','需要 CEO 拍板速度的早期'],
+    avoid:['需要慢工出细活的硬件 / 医疗 / 制造','团队规模超过 30 人后还想事必躬亲','SaaS 这类需要客户耐心陪伴的方向']
+  },
+  {
+    id:'reflective-craftsman',
+    latin:'The Reflective Craftsman',
+    zh:'反思型工匠',
+    target:{risk:35, control:55, longterm:80, empathy:55, openness:85},
+    oneliner:'你愿意为「把一件事做对」反复打磨,也愿意为「发现自己错了」推翻自己。你的产品里有你这个人的影子。',
+    strengths:['产品品味好,愿意为细节投入额外时间','极强的自我修正能力,能从批评里听到信号','能把团队带向「我们做的是有意义的事」的状态'],
+    risks:['容易陷入完美主义,迟迟不发布','可能低估营销和叙事的重要性,产品好却没人知道','在需要拍板硬决策时,容易反复'],
+    fits:['内容 / 游戏 / 工具型产品','技术驱动的赛道(AI / 开发者工具)','需要长期心智的小而美生意'],
+    avoid:['纯增长打法的消费品类','重运营、靠铺货铺人的电商','需要 CEO 持续对外站台的赛道']
+  },
+  {
+    id:'visionary-operator',
+    latin:'The Visionary Operator',
+    zh:'远见操盘手',
+    target:{risk:75, control:70, longterm:80, empathy:55, openness:75},
+    oneliner:'你既敢押注、又看长期,既掌控全局、又对世界保持开放。这是创始人画像里最稀缺、也最危险的一种。',
+    strengths:['能把十年后的样子讲清楚,并且让别人相信','在大方向上很少犯错,愿意为长期承担短期阵痛','学习速度快,会从同行/书/导师里持续吸收'],
+    risks:['野心过强,可能逼公司超过它现在能承受的速度','控制欲会让真正强的二号位待不久','你画的饼大到自己都开始相信全是真的'],
+    fits:['平台型 / 基础设施 / 长期资本密集赛道','需要持续融资讲故事的方向(AI、硬件、Web3 类)','想做大公司而非小生意'],
+    avoid:['只想做现金牛、不想上市的生意','一个人/小团队就能完成的项目(你会觉得无聊)']
+  },
+  {
+    id:'steady-steward',
+    latin:'The Steady Steward',
+    zh:'稳健守业者',
+    target:{risk:30, control:50, longterm:75, empathy:75, openness:55},
+    oneliner:'你不追风口,也不被风口带跑。你想要的是一家「活得久、活得好」的公司,以及一个还能陪家人吃晚饭的自己。',
+    strengths:['现金流意识强,极少踩资金断裂的坑','留人能力强,核心团队稳定','身体和家庭通常不会出大问题——这本身就是稀缺资产'],
+    risks:['可能错过本该激进的窗口','在估值博弈和媒体战场上容易吃亏','故事讲不够大,顶级 VC 会觉得「天花板低」'],
+    fits:['SaaS / 垂直行业工具 / 服务业','以现金流和复购为核心的生意','想做 10 年以上、不一定要上市的公司'],
+    avoid:['赢家通吃型市场(社交、平台)','需要烧钱抢规模的赛道','与你性格相反的激进 VC 主导的融资']
+  },
+  {
+    id:'battle-tactician',
+    latin:'The Battle Tactician',
+    zh:'野心野战派',
+    target:{risk:75, control:55, longterm:40, empathy:55, openness:50},
+    oneliner:'你在乱局里最舒服。常规打法里你显得普通,一旦出现危机/对抗/战役,你的判断力立刻被看见。',
+    strengths:['抗压、敢拍板、危机时不慌','对手快一步,你能在 24 小时内反击','团队在你身上能看到「打仗的人」的感觉,跟着有劲'],
+    risks:['和平期容易掉链子,做不出长期规划','短期主义会让你不停打仗,但没攒下复利','身体长期透支,情绪起伏大'],
+    fits:['竞争激烈的成熟赛道(本地生活、消费、跨境)','需要不断打仗的销售/BD 主导生意','并购、出海、监管博弈这种「需要操盘手」的场景'],
+    avoid:['需要 5 年才能验证的科研/平台型项目','安静做产品的工匠型方向','作为唯一创始人(你需要一个看长期的伙伴)']
+  },
+  {
+    id:'gentle-idealist',
+    latin:'The Gentle Idealist',
+    zh:'温柔理想家',
+    target:{risk:30, control:25, longterm:75, empathy:90, openness:65},
+    oneliner:'你创业是因为你相信一件事「应该被做」。你对人、对意义、对长期都很认真——但商业有时不在乎这些。',
+    strengths:['有清晰的使命感,能吸引一批死忠的同路人','客户/用户对你的信任度极高','在 ESG / 社区 / 文化型生意上有天然优势'],
+    risks:['对人太软,留不下问题员工,处理不好则反噬团队公平','现金流意识弱,容易被「我们的事业很伟大」遮蔽现实','在硬碰硬的竞争里容易吃亏'],
+    fits:['内容 / 教育 / 健康 / 设计驱动的品牌','基于社区或使命感的小而美生意','非营利/B Corp 路线'],
+    avoid:['资本密集、需要不停融资讲故事的赛道','需要冷酷裁员、抢供应链的方向','与你气质完全相反的激进合伙人(找一个理性派搭档)']
+  },
+  {
+    id:'eager-learner',
+    latin:'The Eager Learner',
+    zh:'学习型新手',
+    target:{risk:50, control:50, longterm:55, empathy:55, openness:88},
+    oneliner:'你的画像还在塑形中。其他维度都不极端,但「向自己学习」这一项极高——这恰恰是 CEO 最关键的复利。',
+    strengths:['愿意复盘、找 mentor、读书,认知更新速度快','不容易死在「不知道自己不知道」上','跨赛道适应力强'],
+    risks:['可能因为「还在学」迟迟下不了大注','容易被新观念冲走原有判断,出现摇摆','需要先用一次真正的失败/成功固化自己的风格'],
+    fits:['第一次创业(请用这次实验来认识自己)','可以小步验证、低成本试错的赛道','需要持续吸收新知识的方向(AI / 新兴市场)'],
+    avoid:['一上来就需要 All in、不可逆的重资产生意','需要强势人设对外的方向(媒体、个人品牌)']
+  }
+];
+
+// ---------- 匹配最贴近的原型 ----------
+function pickArchetype(t){
+  // openness 极高时优先考虑 eager-learner
+  if(t.openness>=80 && Math.max(...Object.values(t))===t.openness){
+    return ARCHETYPES.find(a=>a.id==='eager-learner');
+  }
+  let best=null, bestD=1e9;
+  for(const a of ARCHETYPES){
+    let d=0;
+    for(const k in a.target){
+      const w = (k==='openness')?0.6:1;   // openness 作为修饰维度,权重略低
+      d += w * Math.pow(t[k]-a.target[k], 2);
+    }
+    if(d<bestD){bestD=d; best=a;}
+  }
+  return best;
+}
+
+// ---------- 方向性建议 ----------
+function buildAdvice(t, arch){
+  const advice=[];
+  // 1. 从原型的 fits/avoid 抽 1 条
+  advice.push({
+    title:'你适合做什么',
+    body:`基于你的画像,你更适合：${arch.fits.join('、')}。短期内尽量避开：${arch.avoid.join('、')}。`
+  });
+
+  // 2. 风险偏好
+  if(t.risk>=70) advice.push({
+    title:'给你的风险刹车',
+    body:'你的押注本能在 70 分以上。这是优势,但要给自己设一个「最大可承受损失」清单——账上现金、关键人才、个人健康、家庭关系——任何一条触线都立刻减速,而不是再加注一次。'
+  });
+  else if(t.risk<=30) advice.push({
+    title:'给你的风险油门',
+    body:'你的风险偏好偏保守,容易错过窗口。给自己一条规则：当三个独立信号(市场、用户、团队)同时变绿时,你必须 all in 一次,不能再用「我再看看」推迟。'
+  });
+
+  // 3. 控制 vs 分权
+  if(t.control>=70) advice.push({
+    title:'你需要一个二号位',
+    body:'你在控制维度上偏高,这意味着你能拍板,但也意味着真正强的人才在你身边很难待久。务必招一个比你慢、比你稳、敢挑战你的 COO / CTO,并提前把「哪些决策不归我」写下来。'
+  });
+  else if(t.control<=30) advice.push({
+    title:'警惕「让所有人都开心」',
+    body:'你倾向分权和信任,这让团队舒服,但 CEO 的本职之一就是说「我决定」。给自己一条规则：方向、节奏、人事，这三件事不开会、不投票,由你一个人决定后告知团队。'
+  });
+
+  // 4. 时间视角
+  if(t.longterm>=70) advice.push({
+    title:'长期主义的代价',
+    body:'你看时间的尺度比同行远,这是你最大的稀缺。但务必每个季度做一次「这 3 个月有没有真实进展」的硬核检查——长期主义最容易掩盖的失败,是「我们在为未来打基础」式的拖延。'
+  });
+  else if(t.longterm<=35) advice.push({
+    title:'攒一点复利',
+    body:'你的决策偏短期,擅长抓机会但少积累。给自己定一个最低限度的「复利账户」：每月固定 4 小时做用户深访、每季度写一份业务复盘——只这两件,做满 12 个月,你的画像会完全不同。'
+  });
+
+  // 5. 共情
+  if(t.empathy<=30) advice.push({
+    title:'人不是变量',
+    body:'你的共情维度偏低。这让你在裁员、谈判、危机里下得了手,但也意味着核心团队和家庭可能正在悄悄流失。强制规定:每两周一次一对一,每周一次家庭/朋友时间,雷打不动。这不是软话,这是经营动作。'
+  });
+  else if(t.empathy>=75) advice.push({
+    title:'共情也要有边界',
+    body:'你的共情维度很高,人是被你吸引过来的——但你也最容易留住不该留的人。学一条规则:「我可以共情你的处境,但我不会为此改变对事的判断」。这句话练熟,会救你两次创业。'
+  });
+
+  // 6. 认知开放
+  if(t.openness>=75) advice.push({
+    title:'把学习变成肌肉,不是焦虑',
+    body:'你向自己学习的能力远高于平均,这是 CEO 最关键的复利。但要警惕「学习成瘾」——读再多书、上再多课,不如把一次决策做完整复盘。给自己一个上限:每月最多读 2 本书,但必须写 1 份决策复盘。'
+  });
+  else if(t.openness<=35) advice.push({
+    title:'给自己开一扇窗',
+    body:'你的反思维度偏低,执行力强,但容易在一个错误的方向上走太远。建议每个月固定做一件事:找一个聪明的局外人(投资人、前辈、对手公司朋友)喝杯咖啡,只问一个问题——「你觉得我现在最大的盲区是什么?」'
+  });
+
+  // 截到 5 条,避免过长
+  return advice.slice(0,5);
+}
+
+// ---------- 评分 ----------
+function computeScore(end){
+  const f = FIELDS.reduce((a,b)=>a+state[b.k],0)/FIELDS.length;
+  let s = f*0.5 + Math.min(100, state.mrr/3)*0.2 + Math.min(100, Math.max(0,state.cash)/500)*0.1 + state.stage*5;
+  if(end.type==='good') s+=15;
+  if(end.type==='bad') s-=20;
+  return Math.max(0,Math.min(100,Math.round(s)));
+}
+
+function gradeFrom(score,end){
+  if(end.type==='bad'){
+    if(score<25) return {title:'潦草收场',desc:'但失败本身也是经验。下一次,你会看清更多隐患。'};
+    return {title:'体面退场',desc:'结果不理想,但你的处理方式赢得了尊重。'};
+  }
+  if(score>=85) return {title:'传奇创始人',desc:'你跨越了所有阶段,留下了一份足以让人长久谈论的作业。'};
+  if(score>=70) return {title:'优秀创业者',desc:'你跑通了商业模式,也建立了健康的组织。'};
+  if(score>=55) return {title:'合格的玩家',desc:'你撑过了最艰难的阶段。下一局你会更稳。'};
+  if(score>=40) return {title:'摸到门道',desc:'你看见了什么是关键路径。再来一次,你会做得更好。'};
+  return {title:'初学者',desc:'这一局像一节昂贵的课。最有价值的是你写下来的笔记。'};
+}
+
+// ---------- 经验教训 ----------
+function buildLessons(){
+  const lessons=[];
+  if(state.health<40) lessons.push('健康是这场长跑里最容易被忽略,也最先出问题的一项。下一局留出强制休息日。');
+  if(state.team<40) lessons.push('团队不是工具,而是合伙人和同行者。把人的事处理好,公司很多问题就消失了。');
+  if(state.learning<40) lessons.push('做事的时间太多,做选择的时间太少。CEO 的杠杆是判断力,不是体力。');
+  if(state.pr>70) lessons.push('品牌和公关是放大器:它会放大你的优势,也会放大你的疏忽。');
+  if(state.cash<30 && state.ending && state.ending.type!=='bad') lessons.push('账上的钱本质上是时间。少花一块钱,等于多一天可能性。');
+  if(state.mrr>=100) lessons.push('真正的护城河是付费客户用脚投票:他们续费,你才存在。');
+  if(state.stage>=3) lessons.push('融资是一把双刃剑:进得快,跑得久;但代价是被人盯着,无法回头。');
+  if(state.history.filter(h=>h.cat==='生活').length<2) lessons.push('整个过程里,生活类事件出现得太少——可能是你下意识忽略了它们。');
+  if(lessons.length===0) lessons.push('你这一局打得很稳。下一次可以尝试更激进的路线,看看天花板在哪里。');
+  return lessons;
+}
+
+</script>
+</body>
+</html>
